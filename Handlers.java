@@ -20,6 +20,7 @@ import java.util.Set;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import static garagedooropener.HTTPSServer.port;
 
 
 /**
@@ -40,6 +41,46 @@ public class Handlers {
 			os.close();
 		}
 	}
+    
+    public static class toggle implements HttpHandler {
+                private GarageMqttClient garageMqttClient;
+                
+                public toggle( GarageMqttClient garageMqttClient){
+                    this.garageMqttClient = garageMqttClient; 
+                }
+                            
+                
+		@Override
+		public void handle(HttpExchange he) throws IOException {                                                
+			URI uri = he.getRequestURI();                      
+                        if( validateClient(uri)) {
+                            String url = uri.toString();
+                            
+                            String response = "<h1> The garage door toggle. </h1>";
+                            he.sendResponseHeaders(200, response.length());
+                            OutputStream os = he.getResponseBody();                                             
+                            os.write(response.getBytes());
+                            os.close();
+                            System.out.println(response);                       
+                            //Publish MQTT Topic
+                            garageMqttClient.publish("garage/toggle", response);
+                        }
+                        else{
+                          System.out.println("Client without valid key attempted to connect");                         
+                        }
+		}
+                
+                public boolean validateClient(URI uri){
+                    String url = uri.toString();
+                    int indexOfKey = url.indexOf("/", 1);
+                    String key = url.substring(indexOfKey+1);
+                    if( (key.equals( GarageDoorOpener.mykey)) ) 
+                        return true;
+                    return false;
+                }
+                
+	}
+    
     
     
 }

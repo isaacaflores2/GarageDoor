@@ -34,15 +34,22 @@ import com.sun.net.httpserver.HttpsServer;
  */
 public class HTTPSServer extends Thread {
     private HttpsServer server; 
-    public static int port = 50000; 
+    public static int port = 9000; 
     public int buf_len = 2048;
     public DataOutputStream dos;
     public DataInputStream dis;
     public ObjectOutputStream oos;
     public ObjectInputStream ois; 
-    private String ksName = "/home/iflores/NetBeansProjects/garageDoorOpener/src/garagedooropener/flores.jks";
+    private String ksName = "/home/iflores/NetBeansProjects/garageDoorOpener/src/garagedooropener/flores2.jks";
     char ksPass[] = "floresJKS123!".toCharArray();
     char ctPass[] = "mykey123!".toCharArray();
+    public GarageMqttClient garageMqttClient;
+    
+    
+    public HTTPSServer( GarageMqttClient garageMqttClient){
+        this.garageMqttClient = garageMqttClient;
+    }
+    
     
     @Override
     public void run() {
@@ -50,11 +57,11 @@ public class HTTPSServer extends Thread {
             //Load Certificate 
             FileInputStream fin = new FileInputStream(ksName);
             KeyStore ks = KeyStore.getInstance("JKS");
-            ks.load(fin, ctPass);
+            ks.load(fin, ksPass);
             
             //KeyManagerFactory
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(ks, ksPass);
+            kmf.init(ks, ctPass);
             
             //TrustManagerFactory
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
@@ -91,15 +98,24 @@ public class HTTPSServer extends Thread {
             //Handlers
             System.out.println("HTTPS server is starting at port: " + port);
             server.createContext("/", new Handlers.RootHandler());
+            server.createContext("/toggle", new Handlers.toggle(garageMqttClient));
             server.setExecutor(null);
             server.start();
+            
+            InetAddress ip;	 
+            ip = InetAddress.getLocalHost();
+            System.out.println("Current IP address : " + ip.getHostAddress());
+
+            
+            
         } 
         catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    public static void main(String[] args) { 
+    /*public static void main(String[] args) { 
       new HTTPSServer().start(); 
    }
+*/
 }

@@ -10,14 +10,19 @@ package garagedooropener;
  * @author iflores
  */
 public class GarageDoorOpener {
-
+    public final static String mykey = "my secret key";
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        new GarageDoorServer().start();
-        new GarageMqttClient().start();
+        // TODO code application logic herea
+        GarageMqttClient garageMqttClient = new GarageMqttClient(); 
+        garageMqttClient.start(); 
+        HTTPSServer httpsServer = new HTTPSServer(garageMqttClient);
+        httpsServer.start();
+        
+        //new GarageDoorServer().start();
+        
         
         //GarageDoorServer mGarageDoorServer = new GarageDoorServer(); 
         

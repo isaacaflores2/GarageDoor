@@ -20,6 +20,8 @@ public class GarageMqttClient extends Thread implements MqttCallback{
     
     
     //MQTT Client 
+    private MqttClient mqttClient; 
+    private boolean isClientSetup = false; 
     private String topic        = "garage/toggle";
     private String content      = "Message from MqttPublishSample";
     private int qos             = 2;
@@ -35,7 +37,7 @@ public class GarageMqttClient extends Thread implements MqttCallback{
         
         try {
             
-            MqttClient mqttClient = new MqttClient(broker,clientId, persistence);
+            mqttClient = new MqttClient(broker,clientId, persistence);
             MqttConnectOptions connectionOptions = new MqttConnectOptions();
             connectionOptions.setCleanSession(true);
             connectionOptions.setUserName(mqttUsername);
@@ -44,6 +46,7 @@ public class GarageMqttClient extends Thread implements MqttCallback{
             mqttClient.connect(connectionOptions);
             System.out.println("Client is connected to broker:" +broker );
             mqttClient.subscribe(topic);
+            isClientSetup = true; 
             System.out.println("Client is subscribed to " + topic );
         }
         catch(MqttException e){
@@ -55,6 +58,29 @@ public class GarageMqttClient extends Thread implements MqttCallback{
             e.printStackTrace();
         }
     }
+    
+    public void publish(String topic, String content){
+       
+        if(isClientSetup){
+            try{
+                MqttMessage mqttMsg = new MqttMessage(content.getBytes());
+                mqttMsg.setQos(qos);
+                mqttClient.publish(topic, mqttMsg);
+            }
+            catch(MqttException e){
+                System.out.println("reason "+e.getReasonCode());
+                System.out.println("msg "+e.getMessage());
+                System.out.println("loc "+e.getLocalizedMessage());
+                System.out.println("cause "+e.getCause());
+                System.out.println("excep "+e);
+                e.printStackTrace();
+            }
+        }
+        else{
+            System.out.println("Mqtt Client is not setup");
+        }
+    }
+    
     
     //Mqtt Client Callbacks
     @Override

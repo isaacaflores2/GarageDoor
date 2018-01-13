@@ -67,9 +67,7 @@ public class GarageDoorServer extends TCPServer {
             default: 
                 System.out.println("BAD COMMAND");
                 break;                    
-        }
-        
-      
+        }      
     }
 
     
