@@ -74,7 +74,7 @@ public class Handlers {
                     String url = uri.toString();
                     int indexOfKey = url.indexOf("/", 1);
                     String key = url.substring(indexOfKey+1);
-                    if( (key.equals( GarageDoorOpener.mykey)) ) 
+                    if( (key.equals( Main.mykey)) ) 
                         return true;
                     return false;
                 }

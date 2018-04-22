@@ -9,8 +9,8 @@ package garagedooropener;
  *
  * @author iflores
  */
-public class GarageDoorOpener {
-    public final static String mykey = "my secret key";
+public class Main {
+    public final static String mykey = "smarthomeoptimis13!";
     /**
      * @param args the command line arguments
      */
