@@ -3,24 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package garagedooropener;
-import java.io.BufferedReader;
+package bb_garagedooropener;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import static garagedooropener.HTTPSServer.port;
+
 
 
 /**

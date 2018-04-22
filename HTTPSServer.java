@@ -3,23 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package garagedooropener;
+package bb_garagedooropener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+
 import java.net.InetAddress;
 import java.io.*;
 import java.net.*;
 import java.security.*;
-import javax.net.ssl.*;
+
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -28,6 +23,8 @@ import javax.net.ssl.TrustManagerFactory;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author iflores
@@ -41,18 +38,19 @@ public class HTTPSServer extends Thread {
     public ObjectOutputStream oos;
     public ObjectInputStream ois; 
     private String ksName = "/home/iflores/NetBeansProjects/garageDoorOpener/src/garagedooropener/flores2.jks";
+    //private String ksName = "/home/debian/GarageDoor/flores2.jks";
     char ksPass[] = "floresJKS123!".toCharArray();
     char ctPass[] = "mykey123!".toCharArray();
     public GarageMqttClient garageMqttClient;
-    
+    boolean serverRunning = false; 
+    boolean serverSetup = false; 
     
     public HTTPSServer( GarageMqttClient garageMqttClient){
         this.garageMqttClient = garageMqttClient;
     }
     
-    
-    @Override
-    public void run() {
+    public void setup (){
+        System.out.println("Setting up HTTPS Server..."); 
         try {
             //Load Certificate 
             FileInputStream fin = new FileInputStream(ksName);
@@ -89,29 +87,64 @@ public class HTTPSServer extends Thread {
 						SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
 						params.setSSLParameters(defaultSSLParameters);
 					} catch (Exception ex) {
-						ex.printStackTrace();
-						System.out.println("Failed to create HTTPS server");
+                                            System.out.println("HTTPS Server Configuration Execption");
+                                            ex.printStackTrace();
+						
 					}
 				}
 			});
          
-            //Handlers
-            System.out.println("HTTPS server is starting at port: " + port);
+            //Set HTTPS Handlers for server            
             server.createContext("/", new Handlers.RootHandler());
             server.createContext("/toggle", new Handlers.toggle(garageMqttClient));
             server.setExecutor(null);
-            server.start();
-            
-            InetAddress ip;	 
-            ip = InetAddress.getLocalHost();
-            System.out.println("Current IP address : " + ip.getHostAddress());
-
-            
-            
+            serverSetup = true; 
+                              
         } 
         catch (Exception e) {
+            System.out.println("HTTPS Server Setup Exeception!"); 
             e.printStackTrace();
+            serverSetup = false; 
         }
+    }
+    
+    public void start(){
+        if(!serverSetup)
+            setup(); 
+        try{                
+                System.out.println("Starting HTTPS Server...");
+                server.start();
+                System.out.println("HTTPS Server running on port: " + port);
+                serverRunning = true;
+             }
+             catch (Exception e) {
+                System.out.println("HTTPS Server Start Exeception!"); 
+                e.printStackTrace();
+                
+                System.out.println("waiting 5 secs before attempting to restart...");
+                try {                                    
+                    Thread.sleep(5000); 
+                    serverRunning = false;
+                 } catch (InterruptedException ex) {
+                    Logger.getLogger(HTTPSServer.class.getName()).log(Level.SEVERE, null, ex);
+                    e.printStackTrace();
+                 }
+            }
+    }
+    
+    @Override
+    public void run() {
+        setup(); 
+        start(); 
+        
+        while(true ){
+            
+            if(!serverSetup)
+                setup();
+            if(!serverRunning)
+                start();
+                                                 
+        }                
     }
     
     /*public static void main(String[] args) { 

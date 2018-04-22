@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package garagedooropener;
+package bb_garagedooropener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -22,10 +24,11 @@ public class GarageMqttClient extends Thread implements MqttCallback{
     //MQTT Client 
     private MqttClient mqttClient; 
     private boolean isClientSetup = false; 
+    private boolean connected = false; 
     private String topic        = "garage/toggle";
     private String content      = "Message from MqttPublishSample";
     private int qos             = 2;
-    private String broker       = "tcp://localhost:1883";
+    private String broker       = "ssl://192.168.1.18:8883";
     private String clientId     = "httpsBridge";
     private String mqttUsername = "iflores";
     private String mqttPassword = "smarthomeoptimis13!";
@@ -45,18 +48,35 @@ public class GarageMqttClient extends Thread implements MqttCallback{
             mqttClient.setCallback(this);
             mqttClient.connect(connectionOptions);
             System.out.println("Client is connected to broker:" +broker );
-            mqttClient.subscribe(topic);
+            //mqttClient.subscribe(topic);
             isClientSetup = true; 
             System.out.println("Client is subscribed to " + topic );
         }
         catch(MqttException e){
-            System.out.println("reason "+e.getReasonCode());
-            System.out.println("msg "+e.getMessage());
-            System.out.println("loc "+e.getLocalizedMessage());
-            System.out.println("cause "+e.getCause());
-            System.out.println("excep "+e);
-            e.printStackTrace();
+            System.out.println("Mqtt Client Setup Exeception! " );
+            System.out.println("reason: "+e.getReasonCode());
+            System.out.println("msg: "+e.getMessage());
+            System.out.println("loc: "+e.getLocalizedMessage());
+            System.out.println("cause: "+e.getCause());
+            System.out.println("excep: "+e);
+            e.printStackTrace();                        
         }
+    }
+    
+    public void subscribe(){
+         try{
+                mqttClient.subscribe(topic);
+                connected = true; 
+            }
+            catch(MqttException e){
+                System.out.println("Mqtt Client Subcscribe Exeception! " );
+                System.out.println("reason "+e.getReasonCode());
+                System.out.println("msg "+e.getMessage());
+                System.out.println("loc "+e.getLocalizedMessage());
+                System.out.println("cause "+e.getCause());
+                System.out.println("excep "+e);
+                e.printStackTrace();
+            }
     }
     
     public void publish(String topic, String content){
@@ -66,8 +86,10 @@ public class GarageMqttClient extends Thread implements MqttCallback{
                 MqttMessage mqttMsg = new MqttMessage(content.getBytes());
                 mqttMsg.setQos(qos);
                 mqttClient.publish(topic, mqttMsg);
+                System.out.println("Mqtt published: " + mqttMsg );
             }
             catch(MqttException e){
+                System.out.println("Mqtt Client Publish Exeception! " );
                 System.out.println("reason "+e.getReasonCode());
                 System.out.println("msg "+e.getMessage());
                 System.out.println("loc "+e.getLocalizedMessage());
@@ -78,6 +100,7 @@ public class GarageMqttClient extends Thread implements MqttCallback{
         }
         else{
             System.out.println("Mqtt Client is not setup");
+            mqttClientSetup();
         }
     }
     
@@ -85,8 +108,9 @@ public class GarageMqttClient extends Thread implements MqttCallback{
     //Mqtt Client Callbacks
     @Override
     public void connectionLost(Throwable thrwbl) {
-         System.out.println("Connection lost...reconnecting to broker now");
-         mqttClientSetup(); 
+         System.out.println("Connection lost...reconnecting to broker now");        
+         connected  = false;
+         subscribe();
     }
 
     @Override
@@ -105,6 +129,22 @@ public class GarageMqttClient extends Thread implements MqttCallback{
     public void run() {
         System.out.println("MqttClient is starting!");
         mqttClientSetup();
+        while(true){
+           if(!isClientSetup)
+               mqttClientSetup();
+           
+           if(!connected){
+            subscribe();
+            try {                                    
+                Thread.sleep(5000);                     
+                } 
+            catch (InterruptedException ex) {
+                Logger.getLogger(HTTPSServer.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+                }           
+           }
+        }
+        
     }
     
 }

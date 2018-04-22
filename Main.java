@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package garagedooropener;
+package bb_garagedooropener;
+
+
 
 /**
  *
@@ -19,13 +21,7 @@ public class Main {
         GarageMqttClient garageMqttClient = new GarageMqttClient(); 
         garageMqttClient.start(); 
         HTTPSServer httpsServer = new HTTPSServer(garageMqttClient);
-        httpsServer.start();
-        
-        //new GarageDoorServer().start();
-        
-        
-        //GarageDoorServer mGarageDoorServer = new GarageDoorServer(); 
-        
+        httpsServer.start();                     
     }
     
 }
