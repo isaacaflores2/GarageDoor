@@ -1,0 +1,10 @@
+mqttTopic=garage/toggle
+mqttBrokerIPAddress=ssl://isaacaflores2.myddns.rocks:8883
+mqttClientID=garageHttpsBrigdge
+mqttUsername=iflores
+mqttPassword=smarthomeoptimis13!
+httpsPort=9001
+httpsCertPath=/home/iflores/NetBeansProjects/garageDoorOpener/src/bb_garagedooropener/flores3.jks
+httpsKeyStorePass=floresJKS123!
+httpsCertPass=mykey123!
+httpsAuthKey=smarthomeoptimis13!

@@ -1,0 +1,10 @@
+mqttTopic=
+mqttBrokerIPAddress= ssl://url:port
+mqttClientID=
+mqttUsername=
+mqttPassword=
+httpsPort=
+httpsCertPath=
+httpsKeyStorePass=
+httpsCertPass=
+httpsAuthKey=
