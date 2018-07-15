@@ -151,7 +151,9 @@ public class Config {
                 while( configFileScanner.hasNextLine() )
                 {                    
                     paramLine = configFileScanner.nextLine().split("=");
-                    loadParameter( paramLine[0], paramLine[1]);               
+                    loadParameter( paramLine[0], paramLine[1]);   
+                    /*System.out.print("Loaded param value: " + paramLine[1]);
+                    System.out.println();*/
                 }
             }
             catch(Exception e)

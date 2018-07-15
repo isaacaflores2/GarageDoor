@@ -168,10 +168,7 @@ public class GarageMqttClient extends Thread implements MqttCallback{
             System.out.println("Message recieved by the broker!");
          
     }
-    
-    
-    
-    
+      
     @Override
     public void run() {
         if(Main.debugFlag)

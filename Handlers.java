@@ -36,9 +36,11 @@ public class Handlers {
     
     public static class toggle implements HttpHandler {
                 private GarageMqttClient garageMqttClient;
+                private String mySecretKey;
                 
-                public toggle( GarageMqttClient garageMqttClient){
+                public toggle( GarageMqttClient garageMqttClient, String mySecretKey){
                     this.garageMqttClient = garageMqttClient; 
+                    this.mySecretKey = mySecretKey;
                 }
                             
                 
@@ -59,7 +61,9 @@ public class Handlers {
                         }
                         else{
                             if(Main.debugFlag)
-                                System.out.println("Client without valid key attempted to connect");                         
+                                System.out.println("Client without valid key attempted to connect...");    
+                                System.out.println("Client used" + uri.toString());    
+                                System.out.println("Client needs " + mySecretKey);    
                         }
 		}
                 
@@ -67,7 +71,7 @@ public class Handlers {
                     String url = uri.toString();
                     int indexOfKey = url.indexOf("/", 1);
                     String key = url.substring(indexOfKey+1);
-                    if( (key.equals( Main.mykey)) ) 
+                    if( (key.equals( mySecretKey)) ) 
                         return true;
                     return false;
                 }

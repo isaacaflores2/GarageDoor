@@ -12,23 +12,16 @@ import java.util.Scanner;
  * - The main class creates an instace of the config class with loads a config
  * file. The default file is titled "garage_config.txt" Use this file to 
  * format your own custom config file. 
- * - To do: 1) Complete readConfig class to take in parameters from a file
- * 2) Remove remaining string literals
- * 3) Add descriptive comments for each class and methods
+ * - To do: 1) Remove remaining string literals
+ * 2) Add descriptive comments for each class and methods
+ * 3) Remove string literal for config file path
  */
 public class Main {
     
     //Debug flag to allow debug and error messages to print to stdout
     public static boolean debugFlag = false;
     
-    public final static String mykey = "smarthomeoptimis13!";
-    private final static String topic = "garage/toggle";
-    private final static String broker       = "ssl://isaacaflores2.myddns.rocks:8883";
-    private final static String clientId     = "httpsBridge";
-    private final static String username = "iflores";
-    private final static String password = "smarthomeoptimis13!";
-
-    
+   
     /**
      * @param args the command line arguments
      */
@@ -67,18 +60,16 @@ public class Main {
             //If config file path command line argument was not set. Load default config file
             config.loadConfig("/home/iflores/NetBeansProjects/garageDoorOpener/src/bb_garagedooropener/garage_config.txt");          
         }
-            
+        
+        
         //Start MqttClient
-        //GarageMqttClient garageMqttClient = new GarageMqttClient(topic, clientId, username, password, broker); 
         GarageMqttClient garageMqttClient = new GarageMqttClient(config); 
-        //GarageMqttClient garageMqttClient = new GarageMqttClient(); 
         garageMqttClient.start();
   
         //Start HTTPS Server
         HTTPSServer httpsServer = new HTTPSServer(config, garageMqttClient);
-        //HTTPSServer httpsServer = new HTTPSServer(garageMqttClient);        
         httpsServer.start();                     
-        
+        System.out.println("MqttClient and HTTPS Server have started!");
         
        
     }

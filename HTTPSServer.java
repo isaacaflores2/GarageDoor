@@ -39,22 +39,14 @@ public class HTTPSServer extends Thread {
     private HttpsServer server; 
     
     public int buf_len = 2048;
-        
-    //TO DO: Clean up use of old config variables
-    // Old Config variables
-    public int port = 9001; 
-    private String ksName = "/home/iflores/NetBeansProjects/garageDoorOpener/src/bb_garagedooropener/flores3.jks";            
-    char ksPass[] = "floresJKS123!".toCharArray();
-    char ctPass[] = "mykey123!".toCharArray();    
-    
-    //New config variables
+           
+    //config variables
     public String httpsPort;
     public String httpsCertPath;
     public String httpsKeyStorePass;
     public String  httpsCertPass;     
     public GarageMqttClient garageMqttClient;
-    
-    
+    public String httpsAuthKey;
     
     //Control flags
     boolean serverRunning = false; 
@@ -65,9 +57,7 @@ public class HTTPSServer extends Thread {
     public DataInputStream dis;
     public ObjectOutputStream oos;
     public ObjectInputStream ois; 
-   
-    
-    
+          
     public HTTPSServer( GarageMqttClient garageMqttClient){
         this.garageMqttClient = garageMqttClient;
     }
@@ -78,6 +68,7 @@ public class HTTPSServer extends Thread {
         httpsCertPath = config.httpsCertPath;
         httpsKeyStorePass =  config.httpsKeyStorePass;
         httpsCertPass =  config.httpsCertPass;
+        httpsAuthKey = config.httpsAuthKey;
               
     }
     
@@ -132,7 +123,7 @@ public class HTTPSServer extends Thread {
          
             //Set HTTPS Handlers for server        
             server.createContext("/", new Handlers.RootHandler());
-            server.createContext("/toggle", new Handlers.toggle(garageMqttClient));
+            server.createContext("/toggle", new Handlers.toggle(garageMqttClient, httpsAuthKey));
             server.setExecutor(null);
             serverSetup = true; 
                               
