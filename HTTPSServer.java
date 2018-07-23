@@ -58,10 +58,13 @@ public class HTTPSServer extends Thread {
     public ObjectOutputStream oos;
     public ObjectInputStream ois; 
           
+    
+    //Constructor with provided GarageMqttClient member 
     public HTTPSServer( GarageMqttClient garageMqttClient){
         this.garageMqttClient = garageMqttClient;
     }
     
+    //Constructor with with provided GarageMqttClient member and Config class
     public HTTPSServer(Config config, GarageMqttClient garageMqttClient){
         this.garageMqttClient = garageMqttClient;
         httpsPort = config.httpsPort;
