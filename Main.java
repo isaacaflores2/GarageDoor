@@ -1,36 +1,83 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bb_garagedooropener;
-
+import java.io.FileReader;
+import java.io.File;
+import java.util.Scanner;
 
 
 /**
  *
- * @author iflores
+ * @author Isaac Flores June 2018
+ * - Main class initiates the two servers (HTTPS and MQTT Client) that 
+ * make up our HTTPS-MQTT Bridge. 
+ * - The main class creates an instace of the config class with loads a config
+ * file. The default file is titled "garage_config.txt" Use this file to 
+ * format your own custom config file. 
+ * - To do: 1) Remove remaining string literals
+ * 2) Add descriptive comments for each class and methods
+ * 3) Remove string literal for config file path 
+ *      -provide option to pass file path as command line argument 
+ *      -provide option to look for file for config file in current directory
+ * 4) Add option to pass state variables of mqtt client and https server to handler class 
+ *      - the handlerclass will have function to display status of mqtt client, https server
+ *      - provide state of other services (garage door mqtt client, mosquitto broker)
  */
-public class Main {
-    public final static String mykey = "secretkey	";
-    public static boolean debug = false; 
+public class Main 
+{
+    
+    //Debug flag to allow debug and error messages to print to stdout
+    public static boolean debugFlag = false;
+    
+   
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic herea
+    public static void main(String[] args) 
+    {
         
-        if( args.length > 0)
-            debug = Boolean.valueOf(args[0]);
+        //Create instance of configuration class
+        Config config = new Config(); 
+
+        if(args.length == 0 )
+        {
+            //Read config from default directory (default directory is the current working directory)
+            config.loadConfig("/home/iflores/NetBeansProjects/garageDoorOpener/src/bb_garagedooropener/garage_config.txt");          
+        }        
+        else 
+        {   
+            for(int i=0; i < args.length; i++)
+            {
+                if(args[i].contentEquals(Config.debugArg) )
+                    debugFlag = true;
+
+                if(args[i].contentEquals(Config.configFilePathArg))
+                {
+                    //Read config file
+                    config.loadConfig(args[i+1]);
+                    
+                    //progress counter past file path to next arguments
+                    i++;
+                }
+                
+                if(args[i].contentEquals(config.helpArg))
+                {
+                    config.printConfigHelp();
+                }
+            }            
+            
+            //If config file path command line argument was not set. Load default config file
+            config.loadConfig("/home/iflores/NetBeansProjects/garageDoorOpener/src/bb_garagedooropener/garage_config.txt");          
+        }
         
-        GarageMqttClient garageMqttClient = new GarageMqttClient(); 
+        
+        //Start MqttClient
+        GarageMqttClient garageMqttClient = new GarageMqttClient(config); 
         garageMqttClient.start();
-        HTTPSServer httpsServer = new HTTPSServer(garageMqttClient);
-        httpsServer.start();                     
+  
+        //Start HTTPS Server
+        HTTPSServer httpsServer = new HTTPSServer(config, garageMqttClient);
+        httpsServer.start();     
         
-        
-        //CameraClient camera = new CameraClient(0);
-        //Application.launch(CameraClient.class, args);
+        System.out.println("MqttClient and HTTPS Server have started!");               
     }
     
 }

@@ -20,156 +20,359 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  */
 public class GarageMqttClient extends Thread implements MqttCallback{
     
+    //MQTT Client constant
+    private static final String READ = "read";
+    private static final String SENSOR = "sensor";
     
-    //MQTT Client 
+    //MQTT Client members
     private MqttClient mqttClient; 
     private boolean isClientSetup = false; 
     private boolean connected = false; 
     private String topic        = "garage/toggle";
+    private String[] topics; 
+    private MqttDevice[] devices;
     private String content      = "Message from MqttPublishSample";
     private int qos             = 2;
-    private String broker       = "ssl://url";
-    private static String clientId     = "httpsBridge";
-    private String mqttUsername = "username";
-    private String mqttPassword = "password";
+    private String broker       = "ssl://192.168.1.1:8883";
+    private String clientId     = "httpsBridge";
+    private String mqttUsername = "iflores";
+    private String mqttPassword = "smarthomeoptimis13!";
     private MemoryPersistence persistence = new MemoryPersistence();
+    private boolean sensorUpdate = false; 
 
     
-     
-    public void mqttClientSetup() {
+    public GarageMqttClient(){
+        mqttClient = null;
+        isClientSetup = false; 
+        connected = false;                 
+    }
+    
+    public GarageMqttClient(String topic, String clientId, String username, String password, String broker){
+        mqttClient = null;
+        isClientSetup = false; 
+        connected = false; 
         
-        try {
+        this.topic = topic;
+        this.clientId = clientId;
+        this.mqttUsername = username;
+        this.mqttPassword = password;        
+        this.broker = broker;
+        
+    }
+    
+    //Create instance from Config class
+    public GarageMqttClient(Config config){
+        
+        if(config == null)
+        {
+            System.out.println("Config is null. Check your command line arguments or config file" );
+        }
+        
+        mqttClient = null;
+        isClientSetup = false; 
+        connected = false; 
+                
+        this.topic = config.mqttTopic;
+        this.topics = config.mqttTopic.split(",");        
+        this.devices = new MqttDevice[topics.length];
+        this.clientId = config.mqttClientId;
+        this.mqttUsername = config.mqttUsername;
+        this.mqttPassword = config.mqttPassword;        
+        this.broker = config.mqttBrokerIPAddress;
+        
+        //Create list of MqttDevices
+        for(int i = 0; i < topics.length; i++)
+            devices[i] = new MqttDevice(topics[i], getIdFromTopic(topics[i]) ,null, null);
+    }
+    
+     
+    private void mqttClientSetup() 
+    {
+        
+        try 
+        {
             
-            mqttClient = new MqttClient(broker,generateClientId(), persistence);
+            //Create new mqtt client instance 
+            mqttClient = new MqttClient(broker, generateClientId(), persistence);
             MqttConnectOptions connectionOptions = new MqttConnectOptions();
             connectionOptions.setCleanSession(true);
             connectionOptions.setUserName(mqttUsername);
             connectionOptions.setPassword(mqttPassword.toCharArray());
             mqttClient.setCallback(this);
             mqttClient.connect(connectionOptions);
-            if(Main.debug)
-                System.out.println("Client is connected to broker:" +broker );
+            
+            if(Main.debugFlag)
+                System.out.println("Client is connected to broker: " +broker );
             
             isClientSetup = true; 
-            if(Main.debug)
-                System.out.println("Client is subscribed to " + topic );
+                        
         }
-        catch(MqttException e){
-            if(Main.debug) {
-            System.out.println("Mqtt Client Setup Exeception! " );
-            System.out.println("reason: "+e.getReasonCode());
-            System.out.println("msg: "+e.getMessage());
-            System.out.println("loc: "+e.getLocalizedMessage());
-            System.out.println("cause: "+e.getCause());
-            System.out.println("excep: "+e);
-            e.printStackTrace();                        
+        catch(MqttException e)
+        {
+            if(Main.debugFlag) 
+            {
+                printException(e, "Mqtt Client Setup Exeception! " );                               
             }
         }
     }
     
-    public void subscribe(){
-         try{
-                if(!isClientSetup)
-                    mqttClientSetup(); 
-                if(!connected){
+    private void subscribe()
+    {
+         try
+         {
+            if(!isClientSetup)
+                mqttClientSetup(); 
+            
+            if(!connected)
+            {
+                if(topics.length > 1 )
+                {
+                    for(int i = 0; i < topics.length ; i++ )
+                    {
+                        mqttClient.subscribe(topics[i]);
+                        if(Main.debugFlag)
+                            System.out.println("Client is subscribed to " + topics[i] );
+                    }
+                }
+                else
                     mqttClient.subscribe(topic);
-                    connected = true; 
-                }
+                
+                connected = true; 
             }
-            catch(MqttException e){
-                if(Main.debug){
-                System.out.println("Mqtt Client Subcscribe Exeception! " );
-                System.out.println("reason "+e.getReasonCode());
-                System.out.println("msg "+e.getMessage());
-                System.out.println("loc "+e.getLocalizedMessage());
-                System.out.println("cause "+e.getCause());
-                System.out.println("excep "+e);
-                e.printStackTrace();
-                }
+            
+            
+        }
+        catch(MqttException e)
+        {                
+            if(Main.debugFlag)
+            {
+                printException(e,"Mqtt Client Subcscribe Exeception! " );                
             }
+        }
     }
     
-    public void publish(String topic, String content){
+    public void publish(String topic, String content)
+    {
        
         if(!isClientSetup)
             mqttClientSetup(); 
         
-        try{
+        try
+        {
             MqttMessage mqttMsg = new MqttMessage(content.getBytes());
             mqttMsg.setQos(qos);
             mqttClient.publish(topic, mqttMsg);
-            if(Main.debug)
-                System.out.println("Mqtt published: " + mqttMsg );
+            if(Main.debugFlag)
+                System.out.println("Mqtt published on:" + topic + "with the message: " + mqttMsg );
         }
-        catch(MqttException e){
-            if(Main.debug){
-            System.out.println("Mqtt Client Publish Exeception! " );
-            System.out.println("reason "+e.getReasonCode());
-            System.out.println("msg "+e.getMessage());
-            System.out.println("loc "+e.getLocalizedMessage());
-            System.out.println("cause "+e.getCause());
-            System.out.println("excep "+e);
-            e.printStackTrace();
+        catch(MqttException e)
+        {
+            if(Main.debugFlag)
+            {
+                printException(e,"Mqtt Client Publish Exeception! " );
             }
         }
         
         
     }
-    
-    
+       
     //Mqtt Client Callbacks
     @Override
-    public void connectionLost(Throwable thrwbl) {
-        if(Main.debug)
-            System.out.println("Connection lost...reconnecting to broker now");        
+    public void connectionLost(Throwable thrwbl) 
+    {
+        if(Main.debugFlag)
+            System.out.println("Connection lost...");        
         isClientSetup = false;
         connected  = false;
         mqttClientSetup(); 
+        while(!isClientSetup) 
+        {
+            if(Main.debugFlag)
+                System.out.println("Failed to reconnect...waiting 5 seconds to try again..."); 
+            
+            mqttSleep(5000);
+            mqttClientSetup(); 
+        }
+        System.out.println("Client connected...subscribing to all topics now"); 
         subscribe();
     }
 
     @Override
-    public void messageArrived(String string, MqttMessage mm) throws Exception {
-        if(Main.debug)
-            System.out.println("Topic: "+ string + " with message: "+ mm.toString());
+    public void messageArrived(String topic, MqttMessage message) throws Exception 
+    {
+        if(Main.debugFlag)
+            System.out.println("Message arrived! Topic: "+ topic + " with message: "+ message.toString());
+        
+        if( topic.contains(SENSOR) && !message.toString().equals(READ) )
+        {
+            System.out.println("Updating sensor status!");
+            
+            //Update sensor state
+            for(int i = 0; i < devices.length; i++)
+            {
+                if(topic.equals(devices[i].topic()))
+                    devices[i].updateStatus(message.toString());
+            }
+            //Set sensor update flag to true
+            devices[1].setUpdateFlag(true);
+        }
     }
 
     @Override
-    public void deliveryComplete(IMqttDeliveryToken imdt) {
-        if(Main.debug) 
-            System.out.println("Message recieved by the broker!");
-         
+    public void deliveryComplete(IMqttDeliveryToken imdt) 
+    {
+        if(Main.debugFlag) 
+            System.out.println("Message recieved by the broker!");         
+    }
+      
+    @Override
+    public void run() 
+    {
+        if(Main.debugFlag)
+            System.out.println("MqttClient is starting!");
+        
+        //Start mqtt client setup 
+        mqttClientSetup();
+        
+        while(true){                       
+            //Check if client is not setup
+            while(!isClientSetup)
+            {
+                if(Main.debugFlag)
+                    System.out.println("MqttClient is not setup!");
+                mqttClientSetup(); 
+                mqttSleep(5000);
+            }
+            
+            if(!connected)
+            {
+                subscribe();                                        
+                test();
+            }
+        }        
     }
     
-     
-    @Override
-    public void run() {
-        if(Main.debug)
-            System.out.println("MqttClient is starting!");
-        mqttClientSetup();
-        while(true){
-           if(!isClientSetup)
-               mqttClientSetup();
-           
-           if(!connected){
-            subscribe();
-            try {                                    
-                Thread.sleep(5000);                     
-                } 
-            catch (InterruptedException ex) {
-                if(Main.debug){
-                Logger.getLogger(HTTPSServer.class.getName()).log(Level.SEVERE, null, ex);
-                ex.printStackTrace();
+    private String getIdFromTopic(String topic)
+    {
+        String[] topics_split = topic.split("/"); 
+        return topics_split[topics_split.length-1]; 
+    }
+   
+    private void printException(MqttException e, String msg)
+    {        
+        System.out.println(msg);
+        System.out.println("reason "+e.getReasonCode());
+        System.out.println("msg "+e.getMessage());
+        System.out.println("loc "+e.getLocalizedMessage());
+        System.out.println("cause "+e.getCause());
+        System.out.println("excep "+e);
+        e.printStackTrace();
+    }
+    
+    public void mqttSleep(int mSec)
+    {
+        try
+            {
+                Thread.sleep(mSec);                                     
+            }
+            catch (InterruptedException ex) 
+            {
+                if(Main.debugFlag){
+                    Logger.getLogger(HTTPSServer.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
-                }           
-           }
+            }
+    }
+    
+    public String getSensorStatus(String topic, String id)
+    {
+        String status; 
+        publish(topic, READ);
+        MqttDevice device = null;
+        
+        for(int i = 0; i < devices.length; i++)
+        {
+            if( devices[i].id().equals(id))
+                device = devices[i];
+        }
+        if(device == null)
+            return "Device with id: " + id + " was not found.";
+        
+        device.setUpdateFlag(false); 
+        
+        //Wait for sensor to update        
+        while(!device.isUpdated())
+        {
+            mqttSleep(5000);
+            System.out.println("Waiting for sensor: " + id +" to update...");
+        }
+        System.out.println("Sensor: " + id + " has updated!");
+        
+        if( device.status() == null)
+            status = "device has no current status";
+        else
+        {    
+            //Request status from device -- This call ass the device for a status and waits for a response
+            status = devices[1].status();
+            System.out.println("New status: " + status);
         }
         
+        return status; 
     }
     
-    public static String generateClientId() {
-		// length of nanoTime = 15, so total length = 19 < 65535(defined in
-		// spec)
-		return clientId + System.nanoTime();
-	}
+    public boolean getClientStatus()
+    {
+        return isClientSetup && connected;
+    }
+    
+    public void setTopic( String topic )
+    {
+        this.topic = topic; 
+    }
+    
+    public void setClientId(String clientId)
+    {
+        this.clientId = clientId;
+    }
+    
+    public void setUsername(String username)
+    {
+        this.mqttUsername = username;
+    }
+    
+    public void setPassword(String password)
+    {
+        this.mqttPassword  = password;
+    }
+    
+    public void setBroker(String broker)
+    {
+        this.broker = broker; 
+    }
+    
+    public String generateClientId() 
+    {
+        // length of nanoTime = 15, so total length = 19 < 65535(defined in
+        // spec)
+        return clientId + System.nanoTime();
+    }
+    
+    public void test()
+    {
+        System.out.println("Your subscribed topics are: ");
+        for(int i = 0; i < topics.length; i++)
+        {
+            System.out.println( topics[i]);
+            
+        }
+        
+              
+        System.out.println("Below is the status of each device: ");
+        for(int i = 0; i < devices.length; i++)
+        {
+            System.out.println( devices[i].topic() + "with name: " + devices[i].id() + " : " + devices[i].status() + " is updated: " + devices[i].isUpdated() );
+        }
+
+    }
+    
 }

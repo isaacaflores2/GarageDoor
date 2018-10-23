@@ -10,7 +10,7 @@ import java.io.DataOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import java.net.InetAddress;
+
 import java.io.*;
 import java.net.*;
 import java.security.*;
@@ -29,44 +29,73 @@ import java.util.logging.Logger;
  *
  * @author iflores
  */
+
+/*TO DO: 
+    1) Add descriptive comments
+    2) Refractor variable names 
+*/
+
 public class HTTPSServer extends Thread {
+    
     private HttpsServer server; 
-    public static int port = 9001; 
+    
     public int buf_len = 2048;
+           
+    //config variables
+    public String httpsPort;
+    public String httpsCertPath;
+    public String httpsKeyStorePass;
+    public String  httpsCertPass;     
+    public GarageMqttClient garageMqttClient;
+    public String httpsAuthKey;
+    
+    //Control flags
+    boolean serverRunning = false; 
+    boolean serverSetup = false; 
+            
+    //Data stream variables
     public DataOutputStream dos;
     public DataInputStream dis;
     public ObjectOutputStream oos;
     public ObjectInputStream ois; 
-    private String ksName = "path to cert";
-    char ksPass[] = "kspass".toCharArray();
-    char ctPass[] = "ctpass".toCharArray();
-    public GarageMqttClient garageMqttClient;
-    boolean serverRunning = false; 
-    boolean serverSetup = false; 
+          
     
+    //Constructor with provided GarageMqttClient member 
     public HTTPSServer( GarageMqttClient garageMqttClient){
         this.garageMqttClient = garageMqttClient;
     }
     
+    //Constructor with with provided GarageMqttClient member and Config class
+    public HTTPSServer(Config config, GarageMqttClient garageMqttClient){
+        this.garageMqttClient = garageMqttClient;
+        httpsPort = config.httpsPort;
+        httpsCertPath = config.httpsCertPath;
+        httpsKeyStorePass =  config.httpsKeyStorePass;
+        httpsCertPass =  config.httpsCertPass;
+        httpsAuthKey = config.httpsAuthKey;
+              
+    }
+    
+    //TO DO: Check to make sure config was loaded and check all parameters have been set
     public void setup (){
-        if(Main.debug)
+        if(Main.debugFlag)
             System.out.println("Setting up HTTPS Server..."); 
         try {
             //Load Certificate 
-            FileInputStream fin = new FileInputStream(ksName);
+            FileInputStream fin = new FileInputStream(httpsCertPath);
             KeyStore ks = KeyStore.getInstance("JKS");
-            ks.load(fin, ksPass);
+            ks.load(fin, httpsKeyStorePass.toCharArray());
             
             //KeyManagerFactory
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(ks, ctPass);
+            kmf.init(ks, httpsCertPass.toCharArray());
             
             //TrustManagerFactory
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
             tmf.init(ks);
             
             // create https server
-            server = HttpsServer.create(new InetSocketAddress(port), 0);
+            server = HttpsServer.create(new InetSocketAddress(Integer.parseInt(httpsPort)), 0);
                         
             //SSL Context
             SSLContext sc = SSLContext.getInstance("TLS");
@@ -87,7 +116,7 @@ public class HTTPSServer extends Thread {
 						SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
 						params.setSSLParameters(defaultSSLParameters);
 					} catch (Exception ex) {
-                                            if(Main.debug) {
+                                            if(Main.debugFlag) {
                                                 System.out.println("HTTPS Server Configuration Execption");
                                                 ex.printStackTrace();
                                             }
@@ -96,15 +125,17 @@ public class HTTPSServer extends Thread {
 				}
 			});
          
-            //Set HTTPS Handlers for server            
+            //Set HTTPS Handlers for server        
             server.createContext("/", new Handlers.RootHandler());
-            server.createContext("/toggle", new Handlers.toggle(garageMqttClient));
+            server.createContext("/toggle", new Handlers.toggle(garageMqttClient, httpsAuthKey));            
+            server.createContext("/status", new Handlers.status(garageMqttClient, httpsAuthKey));
+            server.createContext("/sensor", new Handlers.sensorDataRequest(garageMqttClient, httpsAuthKey));
             server.setExecutor(null);
             serverSetup = true; 
                               
         } 
         catch (Exception e) {
-            if(Main.debug){
+            if(Main.debugFlag){
                 System.out.println("HTTPS Server Setup Exeception!"); 
                 e.printStackTrace();
             }
@@ -116,15 +147,15 @@ public class HTTPSServer extends Thread {
         if(!serverSetup)
             setup(); 
         try{         
-                if(Main.debug)
+                if(Main.debugFlag)
                     System.out.println("Starting HTTPS Server...");
                 server.start();
-                if(Main.debug)
-                    System.out.println("HTTPS Server running on port: " + port);
+                if(Main.debugFlag)
+                    System.out.println("HTTPS Server running on port: " + httpsPort);
                 serverRunning = true;
              }
              catch (Exception e) {
-                if(Main.debug){
+                if(Main.debugFlag){
                     System.out.println("HTTPS Server Start Exeception!"); 
                     e.printStackTrace();                
                     System.out.println("waiting 5 secs before attempting to restart...");
@@ -133,7 +164,7 @@ public class HTTPSServer extends Thread {
                     Thread.sleep(5000); 
                     serverRunning = false;
                  } catch (InterruptedException ex) {
-                    if(Main.debug){ 
+                    if(Main.debugFlag){ 
                         Logger.getLogger(HTTPSServer.class.getName()).log(Level.SEVERE, null, ex);
                         e.printStackTrace();
                     }
