@@ -28,14 +28,14 @@
 #include <PubSubClient.h>
 
 // Network information
-const char* ssid = "AMERICA";
-const char* password = "pokemon1";
+const char* ssid = "";
+const char* password = "";
 
 //MQTT broker information
 //const char* mqtt_server = "192.168.1.18";
-const char* mqtt_server = "isaacaflores2.myddns.rocks";
-const char* mqtt_username = "iflores";
-const char* mqtt_password = "smarthomeoptimis13!";
+const char* mqtt_server = "";
+const char* mqtt_username = "";
+const char* mqtt_password = "";
 
 //MQTT Client (this device) information
 const char* mqtt_client_id = "garage_magenetic_sensor";
