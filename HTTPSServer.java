@@ -30,9 +30,10 @@ import java.util.logging.Logger;
  * @author iflores
  */
 
-//TO DO: 
-// 1) Add descriptive comments
-// 2) Refractor variable names 
+/*TO DO: 
+    1) Add descriptive comments
+    2) Refractor variable names 
+*/
 
 public class HTTPSServer extends Thread {
     
@@ -45,7 +46,7 @@ public class HTTPSServer extends Thread {
     public String httpsCertPath;
     public String httpsKeyStorePass;
     public String  httpsCertPass;     
-    public GarageMqttClient garageMqttClient;
+    public GarageMqttServer garageMqttServer;
     public String httpsAuthKey;
     
     //Control flags
@@ -59,14 +60,14 @@ public class HTTPSServer extends Thread {
     public ObjectInputStream ois; 
           
     
-    //Constructor with provided GarageMqttClient member 
-    public HTTPSServer( GarageMqttClient garageMqttClient){
-        this.garageMqttClient = garageMqttClient;
+    //Constructor with provided GarageMqttServer member 
+    public HTTPSServer( GarageMqttServer garageMqttServer){
+        this.garageMqttServer = garageMqttServer;
     }
     
-    //Constructor with with provided GarageMqttClient member and Config class
-    public HTTPSServer(Config config, GarageMqttClient garageMqttClient){
-        this.garageMqttClient = garageMqttClient;
+    //Constructor with with provided GarageMqttServer member and Config class
+    public HTTPSServer(Config config, GarageMqttServer garageMqttServer){
+        this.garageMqttServer = garageMqttServer;
         httpsPort = config.httpsPort;
         httpsCertPath = config.httpsCertPath;
         httpsKeyStorePass =  config.httpsKeyStorePass;
@@ -126,7 +127,9 @@ public class HTTPSServer extends Thread {
          
             //Set HTTPS Handlers for server        
             server.createContext("/", new Handlers.RootHandler());
-            server.createContext("/toggle", new Handlers.toggle(garageMqttClient, httpsAuthKey));
+            server.createContext("/toggle", new Handlers.toggle(garageMqttServer, httpsAuthKey));            
+            server.createContext("/status", new Handlers.status(garageMqttServer, httpsAuthKey));
+            server.createContext("/sensor", new Handlers.sensorDataRequest(garageMqttServer, httpsAuthKey));
             server.setExecutor(null);
             serverSetup = true; 
                               
