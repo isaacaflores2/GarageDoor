@@ -20,7 +20,7 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
    - This class reads the values from the application.properties file and provides them to the MqttBridge and MqttDeviceManager classes. 
 
 ## Project Diagram
-![Image of GarageDoor Diagram](https://github.com/isaacaflores2/GarageDoor/blob/master/GarageDoorDiagram.PNG)
+![Image of GarageDoor Diagram](https://github.com/isaacaflores2/GarageDoor/blob/master/GarageDoorDiagram.jpg)
 
 ## Dependencies 
 1. [Spring Boot](https://start.spring.io/)
