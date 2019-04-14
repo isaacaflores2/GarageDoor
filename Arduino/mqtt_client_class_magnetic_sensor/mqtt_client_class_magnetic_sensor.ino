@@ -2,7 +2,6 @@
 #include <ifttt_trigger.h>
 #include <garagedoor_config.h>
 
-
 //MQTT Client information
 String mqtt_client_id = "garage_magenetic_sensor";
 String mqtt_topic = "garage/sensor/door";

@@ -39,6 +39,6 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
       - java -jar SpringBootMqttHttpsBridge-0.0.1.jar --spring.config.location=/full/path/to/application.properties
  
  ## To Do
- - [ ] Refactor and upload Android app files
- - [ ] Refactor and upload Arduino files for ESP8266 files
+ - [X] Refactor and upload Android app files
+ - [X] Refactor and upload Arduino files for ESP8266 files
  - [ ] Add diagram for GarageDoor functionality (interaction between MqttBridge, Android, and ESP8266 modules)

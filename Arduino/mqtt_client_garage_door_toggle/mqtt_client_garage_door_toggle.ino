@@ -17,8 +17,6 @@ uint8_t mqtt_connection_output = 5; //D1
 uint8_t device_input = 0; //Not used
 uint8_t device_output = 13; //D7
 
-
-
 MqttClient mqttClient(mqtt_server, mqtt_username, mqtt_password, mqtt_port, mqtt_client_id, mqtt_topic); 
 
 //Mqtt Callback function
