@@ -44,4 +44,6 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
  ## To Do
  - [X] Refactor and upload Android app files
  - [X] Refactor and upload Arduino files for ESP8266 files
- - [ ] Add diagram for GarageDoor functionality (interaction between MqttBridge, Android, and ESP8266 modules)
+ - [X] Add diagram for GarageDoor functionality (interaction between MqttBridge, Android, and ESP8266 modules)
+ - [ ] Implement Android App in Kotlin
+ - [ ] Replace all String Request with JSON request throughtout project
