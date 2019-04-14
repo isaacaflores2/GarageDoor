@@ -19,6 +19,9 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
 4. ConfigService
    - This class reads the values from the application.properties file and provides them to the MqttBridge and MqttDeviceManager classes. 
 
+## Project Diagram
+![Image of GarageDoor Diagram] (https://github.com/isaacaflores2/GarageDoor/blob/master/GarageDoorDiagram.PNG)
+
 ## Dependencies 
 1. [Spring Boot](https://start.spring.io/)
    - Using [Spring Initializr][https://start.spring.io/] you can easily setup all requried spring boot dependencies for your SpringBoot project. This project utilized the SpringBoot starter Web and Security dependencies. 
