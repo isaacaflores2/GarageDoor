@@ -1,12 +1,7 @@
 
 #include <mqtt_client.h>
 #include <ifttt_trigger.h>
-
-//MQTT broker information
-String mqtt_server = "isaacaflores2.myddns.rocks";
-String mqtt_username = "iflores";
-String mqtt_password = "smarthomeoptimis13!";
-int mqtt_port = 8883 ; 
+#include <garagedoor_config.h>
 
 //MQTT Client information
 String mqtt_client_id = "garage_opener";
