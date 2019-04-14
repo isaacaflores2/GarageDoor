@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "244698765683",
+    "firebase_url": "https://garage-b86e6.firebaseio.com",
+    "project_id": "garage-b86e6",
+    "storage_bucket": "garage-b86e6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244698765683:android:d2475e0a3a853c41",
+        "android_client_info": {
+          "package_name": "com.example.isaacaflores.garage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244698765683-j2dh4gp84jft08v87kkqkc7ev7sgnnov.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.isaacaflores.garage",
+            "certificate_hash": "e9601e25b878d3eb4371bed1318ec812fb7fdd12"
+          }
+        },
+        {
+          "client_id": "244698765683-jok9hl2e6kt9tc5d8jveo7d5328lfu7t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMwFzrKVOWj8PX7klCkGkmOV72iiR704c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "244698765683-jok9hl2e6kt9tc5d8jveo7d5328lfu7t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
