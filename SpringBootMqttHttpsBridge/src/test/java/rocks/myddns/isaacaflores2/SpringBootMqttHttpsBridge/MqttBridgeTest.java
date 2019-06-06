@@ -34,8 +34,11 @@ public class MqttBridgeTest
     @Autowired
     private  MqttBridge mqttBridgeClient; 
     
-    public Device expDevices[]; 
-    
+    public Device expDevices[];
+    public String topic1  = "garage/door/toggle";
+    public String topic2  = "garage/sensor/door";
+    public String id = "2";
+
     @Before
     public void setUp() 
     {                       
@@ -45,8 +48,8 @@ public class MqttBridgeTest
         mqttBridgeClient.subscribe();        
         
         expDevices = new Device[2];
-        expDevices[0] = new Device("sensor/one" , "1" ,null, null);
-        expDevices[1] = new Device("topic/two" , "2" ,null, null);
+        expDevices[0] = new Device(topic1 , "1" ,null, null);
+        expDevices[1] = new Device(topic2 , "2" ,null, null);
     }      
     
     @Test
@@ -63,9 +66,8 @@ public class MqttBridgeTest
     public void testPublish() 
     {       
         System.out.println("publish Test:");
-        String topic = "sensor/one";
-        String content = "test test";           
-        String response = mqttBridgeClient.publish(topic, content);                 
+        String content = "test test";
+        String response = mqttBridgeClient.publish(topic2, content);
         assertEquals(content, response);        
     }
     
@@ -73,8 +75,7 @@ public class MqttBridgeTest
     public void testSubscribe() 
     {       
         System.out.println("subscribe Test:");
-        String topic = "sensor/one";
-        String content = "test test";    
+        String content = "test test";
         assertEquals(true, mqttBridgeClient.isConnected());                
     }
     
@@ -91,11 +92,10 @@ public class MqttBridgeTest
     public void testMessageArrived() throws Exception 
     {
         System.out.println("messageArrived test");
-        String topic = "sensor/one";
         String payload = "test test";
         MqttMessage message = new MqttMessage(payload.getBytes());
-        mqttBridgeClient.messageArrived(topic, message);
-        assertEquals(payload, mqttBridgeClient.getDeviceData("1"));        
+        mqttBridgeClient.messageArrived(topic2, message);
+        assertEquals(payload, mqttBridgeClient.getDeviceData(id));
         
     }
 
@@ -103,9 +103,7 @@ public class MqttBridgeTest
     public void testGetDeviceStatus() 
     {
         System.out.println("test getSensorStatus");
-        String topic = "sensor/one";
-        String id = "1"; 
-        String content = "test test";       
+        String content = "test test";
         String expResult = "default";
         String result = mqttBridgeClient.getDeviceStatus(id);
         assertEquals(expResult, result);        
@@ -114,12 +112,11 @@ public class MqttBridgeTest
     @Test
     public void testGetDeviceData() throws Exception 
     {
-        System.out.println(" test getSensorStatus");
-        String topic = "sensor/one";
-        String id = "1"; 
+        System.out.println(" test getSensorData");
         String content = "test test";             
         MqttMessage message = new MqttMessage(content.getBytes());
-        mqttBridgeClient.messageArrived(topic, message);                           
+        mqttBridgeClient.messageArrived(topic2, message);
+
         String result = mqttBridgeClient.getDeviceData(id);
         assertEquals(content, result);        
     }
@@ -127,9 +124,7 @@ public class MqttBridgeTest
     @Test
     public void testGetDeviceTopic() throws Exception 
     {
-        String topic = "sensor/one";
-        String id = "1";    
-        assertEquals(topic, mqttBridgeClient.getDeviceTopic(id));
+        assertEquals(topic2, mqttBridgeClient.getDeviceTopic(id));
     }
     
     @Test

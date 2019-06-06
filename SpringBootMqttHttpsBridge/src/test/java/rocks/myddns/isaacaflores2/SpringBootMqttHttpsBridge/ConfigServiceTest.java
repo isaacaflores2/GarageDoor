@@ -33,10 +33,8 @@ public class ConfigServiceTest extends TestCase
      public void testMqttTopics()
     {
         String[] expResult = new String[2];
-        expResult[0] = "sensor/one";
-        expResult[1] = "topic/two";
-        //assertEquals(expResult[0], config.mqttTopics()[0]);
-        //assertEquals(expResult[1], config.mqttTopics()[2]);
+        expResult[0] = "garage/door/toggle";
+        expResult[1] = "garage/sensor/door";
         Assert.assertArrayEquals(expResult, config.mqttTopics);
     }
      
@@ -58,13 +56,13 @@ public class ConfigServiceTest extends TestCase
     @Test
     public void testMqttBrokerAddress()
     {
-        assertEquals("tcp://localhost:1883", config.mqttBrokerAddress);
+        assertEquals("ssl://isaacaflores2.myddns.rocks:8883", config.mqttBrokerAddress);
     }
     
     @Test
     public void testMqttClientId()
     {
-        assertEquals("garageDoor", config.mqttClientId);
+        assertEquals("garageDoorMqttBridge_laptop", config.mqttClientId);
     }
     
     @Test

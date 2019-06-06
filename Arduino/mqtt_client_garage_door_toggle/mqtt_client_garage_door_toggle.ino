@@ -4,7 +4,7 @@
 #include <garagedoor_config.h>
 
 //MQTT Client information
-String mqtt_client_id = "garage_opener";
+String mqtt_client_id = "garage_toggle";
 String mqtt_topic = "garage/door/toggle";
 
 //Constants
@@ -33,9 +33,7 @@ void callback(char* topic, byte* payload, unsigned int length)
   strncpy(message, (char*) payload, length);
 
   if( ( strcmp(topic, mqtt_topic.c_str()) == 0 ) && (strcmp(message, device_request[0]) == 0 ) )
-  {
-    //Log toggle
-    Serial.print("Toggle recieved");
+  {    
     digitalWrite(device_output, 1); 
     delay(1000); 
     digitalWrite(device_output, 0); 
@@ -55,5 +53,3 @@ void loop()
 { 
   mqttClient.loop();
 }
-
-

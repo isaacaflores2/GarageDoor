@@ -45,7 +45,7 @@ void MqttClient::setup(MQTT_CALLBACK_SIGNATURE)
   setup_wifi();
 
   //Setup Over the Air update
-  setup_ota(); 
+  setup_ota(mqtt_topic); 
   
   //Start MQTT Client and set the callback function
   client.setClient(espClient); 

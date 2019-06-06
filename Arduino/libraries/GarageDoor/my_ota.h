@@ -4,13 +4,13 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-void setup_ota()
+void setup_ota(String topic)
 {
     // Port defaults to 8266
     // ArduinoOTA.setPort(8266);
 
     //Hostname defaults to esp8266-[ChipID]
-    ArduinoOTA.setHostname("garage/sensor/door");
+    ArduinoOTA.setHostname(topic.c_str());
 
     // No authentication by default
     ArduinoOTA.setPassword("mqttMagnet123");

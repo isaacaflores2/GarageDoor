@@ -30,6 +30,9 @@ public class MqttDeviceManagerServiceTest
     public MqttDeviceManagerService instance;
     
     public Device expDevices[];
+    public String topic1  = "garage/door/toggle";
+    public String topic2  = "garage/sensor/door";
+    public String id = "2";
     
     @Before
     public void setUp() 
@@ -37,8 +40,8 @@ public class MqttDeviceManagerServiceTest
         
         instance = new MqttDeviceManagerService(); 
         expDevices = new Device[2];
-        expDevices[0] = new Device("sensor/one" , "1" ,null, null);
-        expDevices[1] = new Device("topic/two" , "2" ,null, null);
+        expDevices[0] = new Device(topic1 , "1" ,null, null);
+        expDevices[1] = new Device(topic2 , "2" ,null, null);
     }
     
           
@@ -108,14 +111,8 @@ public class MqttDeviceManagerServiceTest
     }
     @Test
     public void testLoadDevice() 
-    {               
-        Device device = new Device("test", "0", "default", null);
-        //Config config = new ConfigService();
-        //config.loadConfigFile(SpringBootMqttHttpsBridgeApplicationTests.CONFIGFILEPATH_STRING);
+    {
         instance.loadDevices(config);
-        expDevices = new Device[2];
-        expDevices[0] = new Device("sensor/one" , "1" ,null, null);
-        expDevices[1] = new Device("topic/two" , "2" ,null, null);        
         ArrayList<Device> devices;
         devices = instance.devices();         
         assertEquals(expDevices.length, devices.size());        

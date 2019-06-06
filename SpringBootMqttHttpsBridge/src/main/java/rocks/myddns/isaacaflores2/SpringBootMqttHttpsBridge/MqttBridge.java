@@ -1,6 +1,5 @@
 package rocks.myddns.isaacaflores2.SpringBootMqttHttpsBridge;
 
-import jdk.nashorn.internal.runtime.regexp.joni.encoding.CharacterType;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
