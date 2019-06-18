@@ -1,11 +1,12 @@
-package rocks.myddns.isaacaflores2.SpringBootMqttHttpsBridge;
+package garagedoor.SpringBootMqttHttpsBridge;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConfigService 
+public class Config
 {
     @Value("${mqtthttpsbridge.mqtttopics:empty}")
     public String[] mqttTopics;

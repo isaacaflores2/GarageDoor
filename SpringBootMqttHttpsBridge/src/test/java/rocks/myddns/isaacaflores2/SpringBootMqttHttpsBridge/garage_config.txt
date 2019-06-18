@@ -1,8 +1,0 @@
-mqttTopics=sensor/one,topic/two
-deviceIDs=1,2
-numDevices=2
-mqttBrokerIPAddress=tcp://localhost:1883
-mqttClientID=testClientId
-mqttUsername=iflores
-mqttPassword=smarthomeoptimis13!
-
