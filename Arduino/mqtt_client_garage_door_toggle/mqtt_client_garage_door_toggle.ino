@@ -17,7 +17,11 @@ uint8_t mqtt_connection_output = 5; //D1
 uint8_t device_input = 0; //Not used
 uint8_t device_output = 13; //D7
 
+
+BearSSL::WiFiClientSecure wifiClient; 
+BearSSL::X509List x509CaCert(CA_CERT_PROG);
 MqttClient mqttClient(mqtt_server, mqtt_username, mqtt_password, mqtt_port, mqtt_client_id, mqtt_topic); 
+
 
 //Mqtt Callback function
 void callback(char* topic, byte* payload, unsigned int length)
@@ -35,7 +39,7 @@ void callback(char* topic, byte* payload, unsigned int length)
   if( ( strcmp(topic, mqtt_topic.c_str()) == 0 ) && (strcmp(message, device_request[0]) == 0 ) )
   {    
     digitalWrite(device_output, 1); 
-    delay(1000); 
+    delay(500); 
     digitalWrite(device_output, 0); 
   }
   
@@ -43,9 +47,12 @@ void callback(char* topic, byte* payload, unsigned int length)
   return;
 }
 
+
 void setup()
 {
+  wifiClient.setTrustAnchors(&x509CaCert);
   mqttClient.initBoardIO(mqtt_connection_output, device_input, device_output);
+  mqttClient.setWifiClient(wifiClient); 
   mqttClient.setup(callback);
 }
 

@@ -1,5 +1,6 @@
 #include "mqtt_client.h"
 #include "my_ota.h"
+#include <ESP8266WiFi.h>
 #include "setup_wifi.h"
 
 MqttClient::MqttClient()
@@ -11,6 +12,7 @@ MqttClient::MqttClient()
   
   mqtt_client_id = ""; 
   mqtt_topic = "";     
+
 }
 
 MqttClient::MqttClient(String mqtt_broker_address, String mqtt_broker_username, String mqtt_broker_pass, int mqtt_broker_port, String mqtt_client_id, String mqtt_topic)
@@ -22,7 +24,17 @@ MqttClient::MqttClient(String mqtt_broker_address, String mqtt_broker_username, 
   
   this->mqtt_client_id = mqtt_client_id; 
   this->mqtt_topic = mqtt_topic;     
+
+  Serial.print("client id len: ");
+  Serial.println(this->mqtt_client_id.length());
+
 }
+
+void MqttClient::setWifiClient(BearSSL::WiFiClientSecure& wifiClient){
+  this->wifiClient = &wifiClient;
+}
+
+
 
 void MqttClient::setup(MQTT_CALLBACK_SIGNATURE)
 {
@@ -43,14 +55,15 @@ void MqttClient::setup(MQTT_CALLBACK_SIGNATURE)
   
   //Connect to wifi network
   setup_wifi();
-
+  setClock();
+  
   //Setup Over the Air update
   setup_ota(mqtt_topic); 
   
   //Start MQTT Client and set the callback function
-  client.setClient(espClient); 
-  client.setServer(mqtt_broker_address.c_str(), mqtt_broker_port);
-  client.setCallback(callback);
+  pubSubClient.setClient(*wifiClient); 
+  pubSubClient.setServer(mqtt_broker_address.c_str(), mqtt_broker_port);
+  pubSubClient.setCallback(callback);
 }
 
 void MqttClient::initBoardIO(uint8_t mqtt_connection_output, uint8_t device_input, uint8_t device_output)
@@ -62,25 +75,24 @@ void MqttClient::initBoardIO(uint8_t mqtt_connection_output, uint8_t device_inpu
 
 boolean MqttClient::publish(const char* topic, const char* message)
 {
- return client.publish(topic, message);  
+ return pubSubClient.publish(topic, message);  
 }
 
 boolean MqttClient::subscribe(const char* topic)
 {
-  return client.subscribe(topic); 
+  return pubSubClient.subscribe(topic); 
 }
 
 boolean MqttClient::loop()
 {
 
-  if (!client.connected()) 
+  if (!pubSubClient.connected()) 
   {   
     reconnect();
   }   
   
-  //onSensorUpdate();   
   ArduinoOTA.handle();  
-  return client.loop();   
+  return pubSubClient.loop();   
 }
 
 //Function attempts to connect to MQTT Broker
@@ -89,26 +101,31 @@ void MqttClient::reconnect()
   Serial.println("MqttClient Reconnect");  
   // Loop until we're reconnected
   
-  while (!client.connected()) 
+  while (!pubSubClient.connected()) 
   {
     digitalWrite(mqtt_connection_output, 0); 
     Serial.print("Attempting MQTT connection to ");
-    Serial.print(mqtt_broker_address);
-    Serial.print("....");
+    Serial.print(mqtt_broker_address);    
+
     
+    String clientId = mqtt_client_id;
+    clientId += String(random(0xffff), HEX);
+    Serial.print(" with client id: ");
+    Serial.print(clientId.c_str());
+    Serial.print("....");
     // Attempt to connect
-    if (client.connect(mqtt_client_id.c_str(), mqtt_broker_username.c_str(), mqtt_broker_password.c_str() )) 
+    if (pubSubClient.connect(mqtt_client_id.c_str(), mqtt_broker_username.c_str(), mqtt_broker_password.c_str() )) 
     {
       Serial.println("connected");
-      client.subscribe(mqtt_topic.c_str());
+      pubSubClient.subscribe(mqtt_topic.c_str());
       digitalWrite(mqtt_connection_output, 1); 
     } 
     else 
     {
+
       Serial.print("failed, rc=");
-      Serial.print(client.state());
+      Serial.print(pubSubClient.state());
       Serial.println(" try again in 5 seconds");
-      
       // Wait 5 seconds before retrying
       delay(5000);
     }

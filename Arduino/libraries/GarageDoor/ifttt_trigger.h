@@ -2,10 +2,9 @@
 #define IFTTT_TRIGGER_H
 
 #include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
 #include <garagedoor_config.h>
 
-WiFiClientSecure iftttClient;
+WiFiClient iftttClient;
 
 boolean IFTTT_Post()
 {

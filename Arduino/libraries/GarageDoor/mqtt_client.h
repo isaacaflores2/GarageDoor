@@ -14,7 +14,7 @@
 #define MQTT_CLIENT_H
 
 #include <PubSubClient.h>
-#include <WiFiClientSecure.h>
+#include <ESP8266WiFi.h>
 
 
 class MqttClient
@@ -39,14 +39,17 @@ class MqttClient
   uint8_t device_input; //GPIO5 or D1
   
   //Wifi and MQTT Clients
-  WiFiClientSecure espClient;
-  PubSubClient client;
+  BearSSL::WiFiClientSecure* wifiClient; 
+  PubSubClient pubSubClient;
   
   public: 
   
   //Constructors
   MqttClient();
   MqttClient(String mqtt_broker_address, String mqtt_broker_username, String mqtt_broker_pass, int mqtt_broker_port, String mqtt_client_id, String mqtt_topic);
+
+  //Setters
+  void setWifiClient(BearSSL::WiFiClientSecure& wifiClient);
 
   //Setup network connections  
   void setup(MQTT_CALLBACK_SIGNATURE);

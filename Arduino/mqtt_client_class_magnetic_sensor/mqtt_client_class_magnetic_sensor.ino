@@ -16,7 +16,8 @@ uint8_t mqtt_connection_output = 15; //gpio1 or D8
 uint8_t device_output = 4; //gpio4 or D2
 uint8_t device_input = 5; //GPIO5 or D1
 
-
+BearSSL::WiFiClientSecure wifiClient; 
+BearSSL::X509List x509CaCert(CA_CERT_PROG);
 MqttClient mqttClient(mqtt_server, mqtt_username, mqtt_password, mqtt_port, mqtt_client_id, mqtt_topic); 
 
 //Mqtt Callback function
@@ -83,8 +84,10 @@ uint8_t readSensor()
 }
 
 void setup()
-{
+{  
+  wifiClient.setTrustAnchors(&x509CaCert);
   mqttClient.initBoardIO(mqtt_connection_output, device_input, device_output);
+  mqttClient.setWifiClient(wifiClient); 
   mqttClient.setup(callback);
 }
 
@@ -93,5 +96,3 @@ void loop()
   mqttClient.loop();
   onDeviceInputUpdate(); 
 }
-
-
