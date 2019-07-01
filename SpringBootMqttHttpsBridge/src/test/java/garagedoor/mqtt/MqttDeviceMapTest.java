@@ -1,7 +1,6 @@
 package garagedoor.mqtt;
 
-import garagedoor.SpringBootMqttHttpsBridge.Config;
-import garagedoor.mqtt.MqttDeviceMap;
+import garagedoor.config.Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

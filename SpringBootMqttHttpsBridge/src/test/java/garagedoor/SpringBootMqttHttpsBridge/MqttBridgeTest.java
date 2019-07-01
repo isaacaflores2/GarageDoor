@@ -5,6 +5,7 @@
  */
 package garagedoor.SpringBootMqttHttpsBridge;
 
+import garagedoor.config.Config;
 import garagedoor.iot.device.Device;
 import garagedoor.iot.device.DeviceManager;
 import garagedoor.iot.device.DeviceMap;

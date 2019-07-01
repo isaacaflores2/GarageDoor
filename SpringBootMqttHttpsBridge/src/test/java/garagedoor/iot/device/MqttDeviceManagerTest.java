@@ -7,7 +7,7 @@ package garagedoor.iot.device;
 
 import java.util.List;
 
-import garagedoor.SpringBootMqttHttpsBridge.Config;
+import garagedoor.config.Config;
 import garagedoor.mqtt.MqttDevice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

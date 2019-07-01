@@ -1,5 +1,6 @@
 package garagedoor.SpringBootMqttHttpsBridge;
 
+import garagedoor.config.Config;
 import garagedoor.iot.device.DeviceManager;
 import garagedoor.mqtt.MqttClientSetup;
 import org.eclipse.paho.client.mqttv3.MqttClient;

@@ -53,13 +53,24 @@ public class BridgeController
     
     @GetMapping("/device/data/{deviceId}")
     public String getDeviceData(@PathVariable String deviceId) {
-        return deviceManager.getDeviceData(deviceId);
+
+        String data  = deviceManager.getDeviceData(deviceId);
+
+        if(data == null)
+            data = "Sorry. There is no available status on your garage right now.";
+
+        return data;
     }
     
     @GetMapping("/device/status/{deviceId}")
     public String getDeviceStatus(@PathVariable String deviceId)
     {
-        return deviceManager.getDeviceStatus(deviceId);
+        String status = deviceManager.getDeviceStatus(deviceId);
+
+        if(status == null)
+            status = "Sorry. There is no available status on your garage right now.";
+
+        return status;
     }
     
     @GetMapping("/device/toggle/{deviceId}")

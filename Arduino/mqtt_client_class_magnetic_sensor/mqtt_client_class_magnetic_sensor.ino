@@ -17,7 +17,7 @@ uint8_t device_output = 4; //gpio4 or D2
 uint8_t device_input = 5; //GPIO5 or D1
 
 BearSSL::WiFiClientSecure wifiClient; 
-BearSSL::X509List x509CaCert(CA_CERT_PROG);
+BearSSL::X509List x509CaCert(SERVER_KEY);
 MqttClient mqttClient(mqtt_server, mqtt_username, mqtt_password, mqtt_port, mqtt_client_id, mqtt_topic); 
 
 //Mqtt Callback function
@@ -32,17 +32,24 @@ void callback(char* topic, byte* payload, unsigned int length)
 
   //Copy payload to message
   strncpy(message, (char*) payload, length);
-
+  Serial.print("Received message: ");  
+  Serial.println(message);  
+  
   //If message was recieved for our topic and the message is a read then publish update
   if( (strcmp(topic, mqtt_topic.c_str()) == 0 ) && (strcmp(message, sensor_request[0]) == 0 ) )
   {
+    Serial.print("Reading sensor....");  
     if( readSensor() )
     {
-      mqttClient.publish( topic, door_state_names[1] );    
+      Serial.print("sending status: ");  
+      Serial.println(door_state_names[1]);  
+      mqttClient.publish( mqtt_topic.c_str(), door_state_names[1] );    
     }
     else
     {
-      mqttClient.publish( topic, door_state_names[0] );    
+      Serial.print("sending status: ");  
+      Serial.println(door_state_names[0]);  
+      mqttClient.publish( mqtt_topic.c_str(), door_state_names[0] );    
     }   
   }
   free(payload_copy);   

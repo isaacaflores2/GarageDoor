@@ -1,4 +1,4 @@
-package garagedoor.SpringBootMqttHttpsBridge;
+package garagedoor.config;
 
 
 import org.springframework.beans.factory.annotation.Value;
