@@ -70,6 +70,11 @@
 			<artifactId>google-api-services-dialogflow</artifactId>
 			<version>v2beta1-rev15-1.23.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amazon.alexa</groupId>
+			<artifactId>alexa-skills-kit</artifactId>
+			<version>1.8.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
