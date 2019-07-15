@@ -19,7 +19,7 @@ uint8_t device_output = 13; //D7
 
 
 BearSSL::WiFiClientSecure wifiClient; 
-BearSSL::X509List x509CaCert(CA_CERT_PROG);
+BearSSL::X509List x509CaCert(SERVER_KEY);
 MqttClient mqttClient(mqtt_server, mqtt_username, mqtt_password, mqtt_port, mqtt_client_id, mqtt_topic); 
 
 

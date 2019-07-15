@@ -9,20 +9,48 @@
 #include <WiFiManager.h> 
 #include <ArduinoJson.h>
 #include <time.h>
-
+#include <Ticker.h>
 
 String chip_id = String( "AutoConnect" + String(ESP.getChipId()) );      
+Ticker ticker;
+
+void tick()
+{
+  //toggle state
+  int state = digitalRead(BUILTIN_LED);  // get the current state of GPIO1 pin
+  digitalWrite(BUILTIN_LED, !state);     // set pin to the opposite state
+}
+
+//gets called when WiFiManager enters configuration mode
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  //if you used auto generated SSID, print it
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+  //entered config mode, make led toggle faster
+  ticker.attach(0.2, tick);
+}
 
 void setup_wifi() 
 { 
   WiFiManager wifiManager;
-  wifiManager.autoConnect();
-  
+  wifiManager.setAPCallback(configModeCallback);
+ if (!wifiManager.autoConnect()) {
+    Serial.println("Wifi manager failed to connect and hit timeout. Reseting ESP...");
+    //reset and try again, or maybe put it to deep sleep
+    ESP.reset();
+    delay(1000);
+  }
+
+  //if you get here you have connected to the WiFi
   Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+  Serial.print("WiFi connected");
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  digitalWrite(LED_BUILTIN, 1);
+  
+  ticker.detach();
+  //keep LED on
+  digitalWrite(BUILTIN_LED, LOW);  
 
 }
 
