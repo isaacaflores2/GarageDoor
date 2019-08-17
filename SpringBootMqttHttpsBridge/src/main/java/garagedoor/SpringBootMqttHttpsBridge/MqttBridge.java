@@ -38,12 +38,9 @@ public class MqttBridge extends AbstractBridge<String> implements MqttCallback, 
         this.deviceMap = deviceMap;
     }
 
-
     public void subscribe() {
         logger.info("MqttClient is subscribing...");
          try {
-
-            //Check client connection with broker before subscribing 
             if(!mqttClient.isConnected())
                 setup();
             
@@ -158,10 +155,8 @@ public class MqttBridge extends AbstractBridge<String> implements MqttCallback, 
                 }
                 onStartup = false; 
             }
-            
         }               
     }
-       
 
     public void mqttSleep(int mSec)
     {
@@ -206,8 +201,7 @@ public class MqttBridge extends AbstractBridge<String> implements MqttCallback, 
             printMqttException(e, "Mqtt Client Setup Exeception." );
         }
     }
-
-
+    
     public int getNumDevices()
     {
         return deviceManager.numDevices();

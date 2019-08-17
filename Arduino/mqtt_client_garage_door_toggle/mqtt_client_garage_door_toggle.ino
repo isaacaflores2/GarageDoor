@@ -51,6 +51,10 @@ void callback(char* topic, byte* payload, unsigned int length)
 void setup()
 {
   wifiClient.setTrustAnchors(&x509CaCert);
+  wifiClient.setCACert(rootCA);
+  wifiClient.setCertificate(certificate);
+  wifiClient.setPrivateKey(privateKey);
+  
   mqttClient.initBoardIO(mqtt_connection_output, device_input, device_output);
   mqttClient.setWifiClient(wifiClient); 
   mqttClient.setup(callback);
