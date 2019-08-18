@@ -12,60 +12,60 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-public class DeviceManagerControllerTest {
+public class DeviceManagerControllerImplTest {
 
     @InjectMocks
-    private DeviceManagerController deviceManagerController;
+    private DeviceManagerControllerImpl deviceManagerControllerImpl;
 
     @Mock
     private DeviceManager deviceManager;
 
     private Device<String> expectedDevice;
-    private List<Device> expectedDeviceList;
+    private Set<Device> expectedDeviceSet;
 
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         expectedDevice = new MqttDevice("topic", "1", "running", "data");
-        expectedDeviceList = new ArrayList<>();
-        expectedDeviceList.add(expectedDevice);
+        expectedDeviceSet = new HashSet();
+        expectedDeviceSet.add(expectedDevice);
     }
 
     @Test
     public void index() {
         String index = "MqttDevice Manager home";
-        assertEquals(index, deviceManagerController.index());
+        assertEquals(index, deviceManagerControllerImpl.index());
     }
 
     @Test
     public void getNumDevices() {
         int expectedNumDevices = 2;
         when(deviceManager.numDevices()).thenReturn(expectedNumDevices);
-        int numDevices = deviceManagerController.getNumDevices();
+        int numDevices = deviceManagerControllerImpl.getNumDevices();
         verify(deviceManager).numDevices();
         assertEquals(expectedNumDevices, numDevices);
     }
 
     @Test
     public void getDevices() {
-        when(deviceManager.devices()).thenReturn(expectedDeviceList);
-        List<Device> deviceList = deviceManagerController.getDevices();
+        when(deviceManager.devices()).thenReturn(expectedDeviceSet);
+        Set<Device> deviceList = deviceManagerControllerImpl.getDevices();
         verify(deviceManager).devices();
-        assertEquals(expectedDeviceList, deviceList);
+        assertEquals(expectedDeviceSet, deviceList);
     }
 
     @Test
     public void getDevice() {
         String id = "1";
         when(deviceManager.getDevice(id)).thenReturn(expectedDevice);
-        Device device = deviceManagerController.getDevice(id);
+        Device device = deviceManagerControllerImpl.getDevice(id);
         verify(deviceManager).getDevice(id);
         assertEquals(expectedDevice, device);
     }
@@ -74,7 +74,7 @@ public class DeviceManagerControllerTest {
     public void containsDevice() {
         String id = "1";
         when(deviceManager.contains(id)).thenReturn(true);
-        boolean returnedBool =  deviceManagerController.containsDevice(id);
+        boolean returnedBool =  deviceManagerControllerImpl.containsDevice(id);
         verify(deviceManager).contains(id);
         assert(returnedBool);
     }
@@ -84,7 +84,7 @@ public class DeviceManagerControllerTest {
         String id = "1";
         String expectedStatus = "running";
         when(deviceManager.getDeviceStatus(id)).thenReturn(expectedStatus);
-        String status  = deviceManagerController.getDeviceStatus(id);
+        String status  = deviceManagerControllerImpl.getDeviceStatus(id);
         verify(deviceManager).getDeviceStatus(id);
         assertEquals(expectedStatus, status);
     }
@@ -102,13 +102,13 @@ public class DeviceManagerControllerTest {
 
         when(deviceManager.getDeviceStatus(id)).thenReturn(expectedStatus);
 
-        deviceManagerController.updateDeviceStatus(id, expectedStatus);
-        assertEquals(expectedStatus,deviceManagerController.getDeviceStatus(id));
+        deviceManagerControllerImpl.updateDeviceStatus(id, expectedStatus);
+        assertEquals(expectedStatus, deviceManagerControllerImpl.getDeviceStatus(id));
     }
 
     @Test
     public void handleAllExceptions() {
         RuntimeException e = new RuntimeException();
-        assertEquals(new ResponseEntity<Exception>(e, HttpStatus.INTERNAL_SERVER_ERROR), deviceManagerController.handleAllExceptions(e));
+        assertEquals(new ResponseEntity<Exception>(e, HttpStatus.INTERNAL_SERVER_ERROR), deviceManagerControllerImpl.handleAllExceptions(e));
     }
 }

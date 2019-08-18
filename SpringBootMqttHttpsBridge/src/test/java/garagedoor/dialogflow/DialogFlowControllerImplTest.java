@@ -1,6 +1,7 @@
 package garagedoor.dialogflow;
 
 import com.google.api.services.dialogflow.v2beta1.model.GoogleCloudDialogflowV2WebhookResponse;
+import garagedoor.Controllers.DialogFlowControllerImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -8,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class DialogFlowRestControllerTest {
+class DialogFlowControllerImplTest {
 
     @InjectMocks
-    private DialogFlowRestController dialogFlowRestController;
+    private DialogFlowControllerImpl dialogFlowControllerImpl;
 
     @Mock
     private  DialogFlowRequestHandler requestHandler;
@@ -69,7 +69,7 @@ class DialogFlowRestControllerTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("actions", DialogFlowService.ACTION_OPEN);
         when(requestHandler.processRequest(parameters)).thenReturn(DialogFlowService.RESPONSE_ACTION_OPEN);
-        ResponseEntity<GoogleCloudDialogflowV2WebhookResponse> responseEntity = (ResponseEntity<GoogleCloudDialogflowV2WebhookResponse>) dialogFlowRestController.smartGarageIntent(requestStr);
+        ResponseEntity<GoogleCloudDialogflowV2WebhookResponse> responseEntity = (ResponseEntity<GoogleCloudDialogflowV2WebhookResponse>) dialogFlowControllerImpl.smartGarageIntent(requestStr);
         //verify(requestHandler).processRequest(parameters);
 
         GoogleCloudDialogflowV2WebhookResponse response = new GoogleCloudDialogflowV2WebhookResponse();

@@ -5,8 +5,6 @@
  */
 package garagedoor.iot.device;
 
-import java.util.List;
-
 import garagedoor.Configurations.Config;
 import garagedoor.mqtt.MqttDevice;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +29,7 @@ public class MqttDeviceManagerTest
     public String id1 = "1";
     public String id2 = "2";
     public String status = "default";
-    public String data = "open";
+    public String data = null;
     public int numDevices = 2;
     
     @BeforeEach
@@ -40,8 +38,8 @@ public class MqttDeviceManagerTest
         
         mqttDeviceManager = new MqttDeviceManager();
         expectedMqttDevices = new MqttDevice[2];
-        expectedMqttDevices[0] = new MqttDevice(topic1 , id1 ,status, data);
-        expectedMqttDevices[1] = new MqttDevice(topic2 , id2 ,status, data);
+        expectedMqttDevices[0] = new MqttDevice(id1, topic1 ,status, data);
+        expectedMqttDevices[1] = new MqttDevice(id2, topic2  ,status, data);
         config = new Config();
         config.mqttTopics = new String[]{topic1, topic2};
         config.deviceIds = new String[]{id1, id2};
@@ -65,8 +63,6 @@ public class MqttDeviceManagerTest
     public void testAddDevice() 
     {
         assertThrows(RuntimeException.class, () -> mqttDeviceManager.addDevice(null));
-
-        assertEquals(0, mqttDeviceManager.mqttDeviceList.size());
 
         mqttDeviceManager.addDevice(expectedMqttDevices[0]);
         assertEquals(1, mqttDeviceManager.numDevices());
@@ -110,10 +106,11 @@ public class MqttDeviceManagerTest
         assertThrows(IllegalArgumentException.class, () -> {mqttDeviceManager.loadDevices(data);});
 
         mqttDeviceManager.loadDevices(config);
-        List<MqttDevice> mqttDevices = mqttDeviceManager.devices();
+
         assertEquals(numDevices, mqttDeviceManager.numDevices());
-        assertEquals(expectedMqttDevices[0].getId(), mqttDevices.get(0).getId());
-        assertEquals(expectedMqttDevices[1].getId(), mqttDevices.get(1).getId());
+        assertEquals(expectedMqttDevices[0].toString(), mqttDeviceManager.getDevice(id1).toString());
+        assertEquals(expectedMqttDevices[1].toString(), mqttDeviceManager.getDevice(id2).toString());
+
     }
     
     @Test

@@ -2,9 +2,10 @@ package garagedoor.mqtt;
 
 public interface MqttClientSetup {
 
+    public void loadConfigurationParameters();
 
-    public void loadConfig();
-    public void setup();
+    public void connectToBroker();
+
     public String generateClientId();
 
 }

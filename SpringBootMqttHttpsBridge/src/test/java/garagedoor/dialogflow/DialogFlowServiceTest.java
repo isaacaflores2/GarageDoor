@@ -1,6 +1,6 @@
 package garagedoor.dialogflow;
 
-import garagedoor.Controllers.BridgeController;
+import garagedoor.Controllers.BridgeControllerImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,7 +21,7 @@ class DialogFlowServiceTest {
     private DialogFlowService dialogFlowService;
 
     @Mock
-    private BridgeController bridgeController;
+    private BridgeControllerImpl bridgeControllerImpl;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -35,21 +35,21 @@ class DialogFlowServiceTest {
 
         id = "1";
         map.put("actions", DialogFlowService.ACTION_OPEN);
-        when(bridgeController.toggle(id)).thenReturn("<h1> The garage door toggle. </h1>");
+        when(bridgeControllerImpl.toggle(id)).thenReturn("<h1> The garage door toggle. </h1>");
         response = dialogFlowService.processRequest(map);
         expectedResponse = DialogFlowService.RESPONSE_ACTION_OPEN;
         assertEquals(response, expectedResponse);
 
         id = "1";
         map.put("actions", DialogFlowService.ACTION_CLOSE);
-        when(bridgeController.toggle(id)).thenReturn("<h1> The garage door toggle. </h1>");
+        when(bridgeControllerImpl.toggle(id)).thenReturn("<h1> The garage door toggle. </h1>");
         response = dialogFlowService.processRequest(map);
         expectedResponse = DialogFlowService.RESPONSE_ACTION_CLOSE;
         assertEquals(response, expectedResponse);
 
         id = "2";
         map.put("actions", DialogFlowService.ACTION_STATUS);
-        when(bridgeController.getDeviceData(id)).thenReturn(DialogFlowService.DOOR_STATUS_OPEN);
+        when(bridgeControllerImpl.getDeviceData(id)).thenReturn(DialogFlowService.DOOR_STATUS_OPEN);
         response = dialogFlowService.processRequest(map);
         expectedResponse = "Your garage is " +DialogFlowService.DOOR_STATUS_OPEN + ".";
         expectedResponse += " Would you like me to close your garage?";
@@ -57,7 +57,7 @@ class DialogFlowServiceTest {
 
         id = "2";
         map.put("actions", DialogFlowService.ACTION_STATUS);
-        when(bridgeController.getDeviceData(id)).thenReturn(DialogFlowService.DOOR_STATUS_CLOSED);
+        when(bridgeControllerImpl.getDeviceData(id)).thenReturn(DialogFlowService.DOOR_STATUS_CLOSED);
         response = dialogFlowService.processRequest(map);
         expectedResponse = "Your garage is " +DialogFlowService.DOOR_STATUS_CLOSED + ".";
         expectedResponse += " No need to worry, your house is safe.";

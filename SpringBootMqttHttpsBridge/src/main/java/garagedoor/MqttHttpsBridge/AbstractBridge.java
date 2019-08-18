@@ -1,11 +1,11 @@
-package garagedoor.SpringBootMqttHttpsBridge;
+package garagedoor.MqttHttpsBridge;
 
 import garagedoor.Configurations.Config;
 import garagedoor.iot.device.DeviceManager;
+import garagedoor.mqtt.MqttBroker;
 import garagedoor.mqtt.MqttClientSetup;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,80 +14,58 @@ import org.springframework.stereotype.Component;
 @Component
 public abstract class AbstractBridge<T> implements Bridge, MqttClientSetup {
 
-    protected DeviceManager<T> deviceManager;
     protected Config config;
-
-    //MQTT Client members
+    protected DeviceManager<T> deviceManager;
+    protected MqttBroker mqttBroker;
     protected MqttClient mqttClient;
     protected boolean isClientSetup = false;
-    protected boolean connected = false;
-
-    //MQTT Broker
-    protected int qos=2;
-    protected String broker;
-    protected String clientId;
-    protected String mqttUsername;
-    protected String mqttPassword;
-    protected MemoryPersistence persistence;
-    protected boolean sensorUpdate = false;
-
-    //MqttDevice and client managers
+    protected boolean isSubscribed = false;
     protected String[] topics;
-
     protected Logger logger;
     protected String lineSeperator;
 
-    public AbstractBridge(){
+    public AbstractBridge() {
         mqttClient = null;
         isClientSetup = false;
-        connected = false;
-
-        qos = 2;
-        broker = null;
-        clientId = null;
-        mqttUsername = null;
-        mqttPassword = null;
-        persistence = new MemoryPersistence();
-        sensorUpdate = false;
-
+        isSubscribed = false;
+        mqttBroker = null;
         topics = null;
         deviceManager = null;
         config = null;
-
         logger = LoggerFactory.getLogger(MqttBridge.class);
         lineSeperator = System.lineSeparator();
     }
 
     @Autowired
-    public AbstractBridge(Config config, DeviceManager deviceManager){
+    public AbstractBridge(Config config, DeviceManager deviceManager, MqttBroker mqttBroker) {
         this();
         this.config = config;
         this.deviceManager = deviceManager;
+        this.mqttBroker = mqttBroker;
     }
 
-    public abstract void run();
+    public abstract void start();
 
-    protected void printMqttException(MqttException e, String msg)
-    {
+    protected void printMqttException(MqttException e, String msg) {
         logger.error("Mqtt Exception: " + msg + "MqttException Details: "
-                +  e.getMessage() +  " Reason: "+ e.getReasonCode() + " loc " + e.getLocalizedMessage()
-                + " cause "+ e.getCause());
+                + e.getMessage() + " Reason: " + e.getReasonCode() + " loc " + e.getLocalizedMessage()
+                + " cause " + e.getCause());
 
         e.printStackTrace();
     }
 
     public abstract void subscribe();
+
     public abstract String publish(String deviceId, String content);
 
-    public boolean isConnected() {
-        return connected;
+    public boolean isSubscribed() {
+        return isSubscribed;
     }
 
-    public void loadConfig(){
+    public void loadConfigurationParameters() {
         logger.info("Loading config files...");
 
-        if(config == null)
-        {
+        if (config == null) {
             logger.error("Config is null! " + lineSeperator
                     + "Check your application properties files for requried MqttBridgeClient configuration parameters:" + lineSeperator
                     + "1) mqttTopics 2) mqttClientId 3) mqttBrokerUsername 4) MqttBrokerPassword 5) mqttBrokerAddress");
@@ -96,28 +74,19 @@ public abstract class AbstractBridge<T> implements Bridge, MqttClientSetup {
 
         logger.info("Config broker value: " + config.mqttBrokerAddress);
         topics = config.mqttTopics;
-        clientId = config.mqttClientId;
-        mqttUsername = config.mqttBrokerUsername;
-        mqttPassword = config.mqttBrokerPassword;
-        broker = config.mqttBrokerAddress;
 
-        try
-        {
-            //Create MqttClient Instance
-            mqttClient = new MqttClient(broker, generateClientId(), persistence);
-        }
-        catch (MqttException e)
-        {
-            printMqttException(e, "Mqtt Client Setup Exeception! " );
+        try {
+            mqttClient = new MqttClient(mqttBroker.broker, generateClientId(), mqttBroker.persistence);
+        } catch (MqttException e) {
+            printMqttException(e, "Mqtt Client Setup Exeception! ");
         }
     }
 
-    public abstract void setup();
+    public abstract void connectToBroker();
 
     //Generates unique client getId to prevent client already connected exceptin with Broker
-    public String generateClientId()
-    {
-        return clientId + System.nanoTime();
+    public String generateClientId() {
+        return mqttBroker.clientId + System.nanoTime();
     }
 
 }

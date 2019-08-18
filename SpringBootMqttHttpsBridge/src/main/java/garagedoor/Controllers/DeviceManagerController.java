@@ -1,75 +1,37 @@
 package garagedoor.Controllers;
 
-import java.util.List;
-
 import garagedoor.iot.device.Device;
-import garagedoor.iot.device.DeviceManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/devicemanager")
-public class DeviceManagerController 
-{
-    private DeviceManager deviceManager;
+import java.util.Set;
 
-    @Autowired
-    public DeviceManagerController(DeviceManager deviceManager)
-    {
-        this.deviceManager = deviceManager;
-    }
+public interface DeviceManagerController {
 
     @RequestMapping("/")
-    public String index()
-    {
-        return "MqttDevice Manager home";
-    }
+    public String index();
 
     @RequestMapping("/numdevices")
-    public int getNumDevices()
-    {
-        return deviceManager.numDevices();
-    }
-    
+    public int getNumDevices();
+
     @RequestMapping("/getdevices")
-    public List<Device> getDevices()
-    {
-        return deviceManager.devices();
-    }
+    public Set<Device> getDevices();
 
     @RequestMapping("/get/{getId}")
-    public Device getDevice(@PathVariable String id)
-    {
-        return deviceManager.getDevice(id);
-    }
-    
+    public Device getDevice(@PathVariable String id);
+
     @RequestMapping("/contains/{getId}")
-    public boolean containsDevice(@PathVariable String id)
-    {
-        return deviceManager.contains(id);
-    }
-          
+    public boolean containsDevice(@PathVariable String id);
+
     @RequestMapping("/getStatus/{getId}")
-    public String getDeviceStatus(@PathVariable String id)
-    {
-        return deviceManager.getDeviceStatus(id);
-    }
-          
+    public String getDeviceStatus(@PathVariable String id);
+
     @RequestMapping("/updatestatus/{getId}/getStatus/{getStatus}")
-    public void updateDeviceStatus(@PathVariable String id, @PathVariable String status)
-    {
-        deviceManager.updateDeviceStatus(id, status);
-    }
-    
+    public void updateDeviceStatus(@PathVariable String id, @PathVariable String status);
+
     @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<Exception> handleAllExceptions(RuntimeException e)
-    {
-        return new ResponseEntity<Exception>(e, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    
+    public ResponseEntity<Exception> handleAllExceptions(RuntimeException e);
 }

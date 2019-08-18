@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package garagedoor.SpringBootMqttHttpsBridge;
+package garagedoor.MqttHttpsBridge;
 
 import garagedoor.Configurations.Config;
 import garagedoor.iot.device.Device;
 import garagedoor.iot.device.DeviceManager;
-import garagedoor.iot.device.DeviceMap;
 import garagedoor.iot.device.MqttDeviceManager;
+import garagedoor.mqtt.MqttBroker;
 import garagedoor.mqtt.MqttDevice;
-import garagedoor.mqtt.MqttDeviceMap;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -43,8 +42,8 @@ public class MqttBridgeTest
     MqttClient mqttClient;
 
     private DeviceManager<String> deviceManager;
+    private MqttBroker mqttBroker;
 
-    private DeviceMap<String, String> deviceMap;
     
     public Device expMqttDevices[];
     public String topic1  = "garage/door/toggle";
@@ -73,9 +72,9 @@ public class MqttBridgeTest
 
 
         deviceManager = new MqttDeviceManager<>(config);
-        deviceMap = new MqttDeviceMap(config);
-        mqttBridge = new MqttBridge(config, deviceManager, deviceMap);
-        mqttBridge.loadConfig();
+        mqttBroker = new MqttBroker(config);
+        mqttBridge = new MqttBridge(config, deviceManager, mqttBroker);
+        mqttBridge.loadConfigurationParameters();
 
         MockitoAnnotations.initMocks(this);
     }      
@@ -120,8 +119,8 @@ public class MqttBridgeTest
 
         when(mqttClient.isConnected()).thenReturn(true);
         mqttBridge.subscribe();
-        assertEquals(true, mqttBridge.isConnected());
-        assertEquals(true, mqttBridge.connected);
+        assertEquals(true, mqttBridge.isSubscribed());
+        assertEquals(true, mqttBridge.isSubscribed);
     }
     
     @Test
@@ -133,7 +132,7 @@ public class MqttBridgeTest
         when(mqttClient.isConnected()).thenReturn(true);
         mqttBridge.connectionLost(thrwbl);
 
-        assertTrue(mqttBridge.isConnected());
+        assertTrue(mqttBridge.isSubscribed());
     }
 
     @Test
@@ -159,8 +158,8 @@ public class MqttBridgeTest
     public void testIsConnected() 
     {
         System.out.println("test isConnected: ");
-        assertEquals(false, mqttBridge.isConnected());
-        mqttBridge.connected = true;
-        assertTrue(mqttBridge.isConnected());
+        assertEquals(false, mqttBridge.isSubscribed());
+        mqttBridge.isSubscribed = true;
+        assertTrue(mqttBridge.isSubscribed());
     }
 }

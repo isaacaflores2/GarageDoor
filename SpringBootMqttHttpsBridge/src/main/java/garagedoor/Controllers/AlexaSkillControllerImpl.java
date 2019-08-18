@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class AlexaSkillRestController {
+public class AlexaSkillControllerImpl {
 
 
 }

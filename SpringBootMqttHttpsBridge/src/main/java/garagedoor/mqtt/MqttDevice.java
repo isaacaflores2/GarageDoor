@@ -1,48 +1,81 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package garagedoor.mqtt;
-import garagedoor.iot.device.AbstractDevice;
+
 import garagedoor.iot.device.Device;
 
-/**
- *
- * @author iflores
- */
+public class MqttDevice<T> implements Device<T> {
 
-public class MqttDevice<T> extends AbstractDevice implements Device {
-    private String topic; 
+    private String id;
+    private String topic;
+    private String status;
+    private T data;
 
-    public boolean updated; 
-    
-        
     public MqttDevice() {
-        super();
-        this.topic = null;
-        this.updated = false; 
+        this.id = null;
+        this.status = null;
+        this.data = null;
     }
-    
-    public MqttDevice(String topic, String id, String status, T data) {
-        super(id, status, data);
+
+    public MqttDevice(String id, String topic, String status, T data) {
+        this.id = id;
         this.topic = topic;
-        this.updated = false; 
+        this.status = status;
+        this.data = data;
     }
-    
-    //Getter methods
+
+    @Override
+    public String toString() {
+        return "id: " + id + " , topic:  " + topic + " , status: " + status + " , data: " + data;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public String getTopic() {
-        return topic; 
+        return topic;
     }
 
-    public boolean isUpdated(){
-        return updated;
+    @Override
+    public String getStatus() {
+        return status;
     }
-    
-    //Setter methods
+
+    @Override
+    public T getData() {
+        return data;
+    }
+
+    @Override
+    public void setId(String id) {
+        if (id != null)
+            this.id = id;
+        else
+            throw new IllegalArgumentException("Provided id is null");
+    }
+
+    @Override
     public void setTopic(String topic) {
-        this.topic = topic;        
+        if (topic != null)
+            this.topic = topic;
+        else
+            throw new IllegalArgumentException("Provided topic is null");
     }
 
-}
+    @Override
+    public void setStatus(String status) {
+        if (status != null)
+            this.status = status;
+        else
+            throw new IllegalArgumentException("Provided status is null");
+    }
 
+    @Override
+    public void setData(T data) {
+        if (data != null)
+            this.data = data;
+        else
+            throw new IllegalArgumentException("Provided data is null");
+    }
+}

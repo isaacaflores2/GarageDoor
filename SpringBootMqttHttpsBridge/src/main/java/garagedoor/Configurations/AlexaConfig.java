@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class AlexaConfig {
 
     @Bean
-    public ServletRegistrationBean registerBean(){
+    public ServletRegistrationBean registerBean() {
 
         SpeechletServlet speechletServlet = new SpeechletServlet();
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(speechletServlet, "/alexa");

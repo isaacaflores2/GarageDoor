@@ -1,6 +1,6 @@
 package garagedoor.Controllers;
 
-import garagedoor.SpringBootMqttHttpsBridge.Bridge;
+import garagedoor.MqttHttpsBridge.Bridge;
 
 import garagedoor.iot.device.DeviceManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +14,10 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class BridgeControllerTest {
+public class BridgeControllerImplTest {
 
     @InjectMocks
-    private BridgeController bridgeController;
+    private BridgeControllerImpl bridgeControllerImpl;
 
     @Mock
     private Bridge<String> bridge;
@@ -34,19 +34,19 @@ public class BridgeControllerTest {
     @Test
     public void index() {
         String index = "<h1>GarageDoor</h1>";
-        assertEquals(index,bridgeController.index());
+        assertEquals(index, bridgeControllerImpl.index());
     }
 
     @Test
     public void getMqttBridgeClientStatus() {
         String expecedResponse = "<h1> MQTT Client is running </h1>";
-        when(bridge.isConnected()).thenReturn(true);
-        String response = bridgeController.getMqttBridgeClientStatus();
+        when(bridge.isSubscribed()).thenReturn(true);
+        String response = bridgeControllerImpl.getMqttBridgeClientStatus();
         assertEquals(expecedResponse, response);
 
         expecedResponse = "<h1> MQTT Client is not running....FIX IT</h1>";
-        when(bridge.isConnected()).thenReturn(false);
-        response = bridgeController.getMqttBridgeClientStatus();
+        when(bridge.isSubscribed()).thenReturn(false);
+        response = bridgeControllerImpl.getMqttBridgeClientStatus();
         assertEquals(expecedResponse, response);
 
     }
@@ -55,7 +55,7 @@ public class BridgeControllerTest {
     public void getNumDevices() {
         int expectedNumDevices = 2;
         when(deviceManager.numDevices()).thenReturn(expectedNumDevices);
-        int numDevices = bridgeController.getNumDevices();
+        int numDevices = bridgeControllerImpl.getNumDevices();
         verify(deviceManager).numDevices();
         assertEquals(expectedNumDevices, numDevices);
     }
@@ -65,7 +65,7 @@ public class BridgeControllerTest {
         String expectedData = "open";
         String id = "2";
         when(deviceManager.getDeviceData(id)).thenReturn(expectedData);
-        String data = bridgeController.getDeviceData(id);
+        String data = bridgeControllerImpl.getDeviceData(id);
         verify(deviceManager).getDeviceData(id);
         assertEquals(expectedData, data);
     }
@@ -75,7 +75,7 @@ public class BridgeControllerTest {
         String expectedStatus = "running";
         String id = "2";
         when(deviceManager.getDeviceData(id)).thenReturn(expectedStatus);
-        String status = bridgeController.getDeviceData(id);
+        String status = bridgeControllerImpl.getDeviceData(id);
         verify(deviceManager).getDeviceData(id);
         assertEquals(expectedStatus, status);
     }
@@ -85,7 +85,7 @@ public class BridgeControllerTest {
         String expectedResponse = "<h1> The garage door toggle. </h1>";
         String id = "1";
         when(bridge.publish(id, "toggle")).thenReturn(expectedResponse);
-        String response = bridgeController.toggle(id);
+        String response = bridgeControllerImpl.toggle(id);
         verify(bridge).publish(id, "toggle");
         assertEquals(expectedResponse, response);
     }
@@ -93,6 +93,6 @@ public class BridgeControllerTest {
     @Test
     public void handleAllExceptions() {
         RuntimeException e = new RuntimeException();
-        assertEquals(new ResponseEntity<Exception>(e, HttpStatus.INTERNAL_SERVER_ERROR), bridgeController.handleAllExceptions(e));
+        assertEquals(new ResponseEntity<Exception>(e, HttpStatus.INTERNAL_SERVER_ERROR), bridgeControllerImpl.handleAllExceptions(e));
     }
 }

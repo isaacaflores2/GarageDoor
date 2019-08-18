@@ -1,6 +1,6 @@
 package garagedoor.dialogflow;
 
-import garagedoor.Controllers.BridgeController;
+import garagedoor.Controllers.BridgeControllerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,7 @@ public class DialogFlowService implements DialogFlowRequestHandler {
 
 
     @Autowired
-    BridgeController bridgeController;
-
+    BridgeControllerImpl bridgeControllerImpl;
 
     private Logger logger;
 
@@ -32,30 +31,26 @@ public class DialogFlowService implements DialogFlowRequestHandler {
         this.logger = LoggerFactory.getLogger(DialogFlowRequestHandler.class);
         String response;
 
-        if(action != null )
-        {
-            switch(action){
+        if (action != null) {
+            switch (action) {
                 case ACTION_OPEN:
-                    bridgeController.toggle("1");
+                    bridgeControllerImpl.toggle("1");
                     response = "Opening your garage now.";
                     break;
                 case ACTION_CLOSE:
-                    bridgeController.toggle("1");
+                    bridgeControllerImpl.toggle("1");
                     response = "Closing your garage now.";
                     break;
                 case ACTION_STATUS:
-                    String garageStatus = bridgeController.getDeviceData("2");
+                    String garageStatus = bridgeControllerImpl.getDeviceData("2");
 
-
-                    if( garageStatus.equals(DOOR_STATUS_OPEN)){
+                    if (garageStatus.equals(DOOR_STATUS_OPEN)) {
                         response = "Your garage is " + garageStatus + ".";
                         response += " Would you like me to close your garage?";
-                    }
-                    else if (garageStatus.equals(DOOR_STATUS_CLOSED)){
+                    } else if (garageStatus.equals(DOOR_STATUS_CLOSED)) {
                         response = "Your garage is " + garageStatus + ".";
                         response += " No need to worry, your house is safe.";
-                    }
-                    else{
+                    } else {
                         response = garageStatus;
                     }
                     break;
@@ -63,8 +58,7 @@ public class DialogFlowService implements DialogFlowRequestHandler {
                     response = "Sorry I have received an action I cannot help with.";
                     logger.info(response);
             }
-        }
-        else{
+        } else {
             response = response = "Sorry I did not receive an action with your request.";
             logger.info(response);
         }
