@@ -7,7 +7,7 @@ package garagedoor.iot.device;
 
 import java.util.ArrayList;
 import java.util.List;
-import garagedoor.config.Config;
+import garagedoor.Configurations.Config;
 import garagedoor.mqtt.MqttDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

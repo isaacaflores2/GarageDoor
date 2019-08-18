@@ -1,4 +1,4 @@
-package garagedoor.bridgeController;
+package garagedoor.Controllers;
 
 import java.util.List;
 

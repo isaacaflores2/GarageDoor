@@ -1,6 +1,6 @@
 package garagedoor.mqtt;
 
-import garagedoor.config.Config;
+import garagedoor.Configurations.Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

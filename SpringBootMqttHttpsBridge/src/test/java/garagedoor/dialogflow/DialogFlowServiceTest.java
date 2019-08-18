@@ -1,6 +1,6 @@
 package garagedoor.dialogflow;
 
-import garagedoor.bridgeController.BridgeController;
+import garagedoor.Controllers.BridgeController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

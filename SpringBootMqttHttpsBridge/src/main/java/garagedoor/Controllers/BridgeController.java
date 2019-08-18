@@ -1,4 +1,4 @@
-package garagedoor.bridgeController;
+package garagedoor.Controllers;
 
 import garagedoor.SpringBootMqttHttpsBridge.Bridge;
 import garagedoor.iot.device.DeviceManager;

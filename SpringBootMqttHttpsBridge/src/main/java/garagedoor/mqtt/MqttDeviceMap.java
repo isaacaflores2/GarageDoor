@@ -2,7 +2,7 @@ package garagedoor.mqtt;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import garagedoor.config.Config;
+import garagedoor.Configurations.Config;
 import garagedoor.iot.device.DeviceMap;
 import org.springframework.stereotype.Component;
 
