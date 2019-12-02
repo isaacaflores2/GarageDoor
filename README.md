@@ -5,9 +5,7 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
 - Sprint Boot
 - Eclipse Paho MQTT Software
 - Maven 
-
 ---
-
 ## Detailed Project Description 
 ### Components
 1. MqttBridge
@@ -18,10 +16,8 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
    - This class maps web requests to MqttBridge functions to provide the status of the MqttBridge and read/write to the MQTT devices.
 4. ConfigService
    - This class reads the values from the application.properties file and provides them to the MqttBridge and MqttDeviceManager classes. 
-
 ## Project Diagram
 ![Image of GarageDoor Diagram](https://github.com/isaacaflores2/GarageDoor/blob/master/GarageDoorDiagram.jpg)
-
 ## Dependencies 
 1. [Spring Boot](https://start.spring.io/)
    - Using [Spring Initializr][https://start.spring.io/] you can easily setup all requried spring boot dependencies for your SpringBoot project. This project utilized the SpringBoot starter Web and Security dependencies. 
@@ -29,7 +25,6 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
    - Follow the instructions to add the repository definition and dependency definition to the project pom.xml. 
 3. [Java JDK 1.8 ](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
 4. [Maven](https://maven.apache.org/install.html)
-
 ## Build and Run
 ### 1. Application Properties File
    - Set your application properites for the Web server, login, and the MqttHttpsBridge application. 
@@ -40,7 +35,6 @@ This project implements a MQTT Client and HTTPS Rest controller to serve as a MQ
       - mvn test -Dspring.config.location=/full/path/to/application.properties
 ### 2. Run       
       - java -jar SpringBootMqttHttpsBridge-0.0.1.jar --spring.config.location=/full/path/to/application.properties
- 
  ## To Do
  - [X] Refactor and upload Android app files
  - [X] Refactor and upload Arduino files for ESP8266 files
